@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { MessageSquareCode } from "lucide-react"
+import { socket } from "@/lib/ws"
 
 interface NamePromptDialogProps {
   isOpen: boolean
@@ -20,18 +21,19 @@ interface NamePromptDialogProps {
 }
 
 export function NamePromptDialog({ isOpen, onNameSubmit }: NamePromptDialogProps) {
-  const [tempName, setTempName] = useState<string>("")
+  const [tempName, setTempName] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const trimmed = tempName.trim()
+    const trimmed = tempName.trim();
     if (trimmed.length >= 2) {
+      socket.emit("joinRoom", trimmed)
       onNameSubmit(trimmed)
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}}>
+    <Dialog open={isOpen} onOpenChange={() => { }}>
       <DialogContent
         className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 backdrop-blur-lg max-w-sm rounded-2xl p-6 shadow-2xl"
         showCloseButton={false}

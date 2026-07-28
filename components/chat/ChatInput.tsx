@@ -9,6 +9,7 @@ import {
   Paperclip,
   Smile,
 } from "lucide-react"
+import { socket } from "@/lib/ws"
 
 interface ChatInputProps {
   onSendMessage: (content: string) => void
@@ -22,6 +23,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
     e.preventDefault()
     const trimmed = value.trim()
     if (trimmed && !disabled) {
+      socket.emit("chatMessage", trimmed)
       onSendMessage(trimmed)
       setValue("")
     }
@@ -39,7 +41,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
         >
           <Paperclip className="w-4 h-4" />
         </Button>
-        
+
         <Button
           type="button"
           variant="ghost"
