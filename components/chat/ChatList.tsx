@@ -15,14 +15,10 @@ const ChatList = () => {
                     <h1 className='xl:text-3xl lg:text-2xl text-xl font-bold'>Chat List</h1>
                     <Button onClick={() => setIsDialogOpen(true)}>Create Chat Room</Button>
                 </div>
-                <Card className='mt-8! shadow-2xl'>
+                <Card className='mt-8!'>
                     <CardContent>
                         <div className='grid grid-cols-4 gap-5 items-center'>
-                            <Card>
-                                <CardContent>
 
-                                </CardContent>
-                            </Card>
                         </div>
                     </CardContent>
                 </Card>
