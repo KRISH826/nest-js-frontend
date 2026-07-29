@@ -1,12 +1,19 @@
-export type SenderType = "user" | "other" | "ai"
+export type SenderType = "user" | "other" | "system" | "ai"
 
 export interface Message {
   id: string
+  content: string
   sender: string
   senderType: SenderType
-  avatar: string
-  content: string
   timestamp: string
+  avatar?: string
+}
+
+export interface ChatMessage {
+  id: string
+  username: string
+  message: string
+  timestamp: number
 }
 
 export interface Responder {

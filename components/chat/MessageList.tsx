@@ -13,18 +13,19 @@ import {
   Sparkles,
   HelpCircle,
 } from "lucide-react"
+import { useChatMessages } from "@/hooks/useChatMessage"
 
 interface MessageListProps {
   userName: string
-  messages: Message[]
   searchQuery: string
 }
 
 export function MessageList({
-  messages,
+  userName,
   searchQuery,
 }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const { messages } = useChatMessages(userName)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -117,10 +118,10 @@ export function MessageList({
 
                 <div
                   className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-xs ${isUser
-                      ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-tr-none"
-                      : isAi
-                        ? "bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/15 text-zinc-800 dark:text-zinc-100 rounded-tl-none"
-                        : "bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200/30 dark:border-zinc-700/20 text-zinc-800 dark:text-zinc-200 rounded-tl-none"
+                    ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-tr-none"
+                    : isAi
+                      ? "bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/15 text-zinc-800 dark:text-zinc-100 rounded-tl-none"
+                      : "bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200/30 dark:border-zinc-700/20 text-zinc-800 dark:text-zinc-200 rounded-tl-none"
                     }`}
                 >
                   {msg.content}
