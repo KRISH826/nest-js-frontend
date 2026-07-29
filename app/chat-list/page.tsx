@@ -1,9 +1,11 @@
-import React from 'react'
+import ChatList from '@/components/chat/ChatList'
 
-const ChatList = () => {
+const page = () => {
     return (
-        <div>ChatList</div>
+        <>
+            <ChatList />
+        </>
     )
 }
 
-export default ChatList
+export default page
