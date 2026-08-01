@@ -15,13 +15,25 @@ const ChatList = () => {
                     <h1 className='xl:text-3xl lg:text-2xl text-xl font-bold'>Chat List</h1>
                     <Button onClick={() => setIsDialogOpen(true)}>Create Chat Room</Button>
                 </div>
-                <Card className='mt-8!'>
-                    <CardContent>
-                        <div className='grid grid-cols-4 gap-5 items-center'>
-
+                <div className='mt-8! border-0'>
+                    <div>
+                        <div className='grid lg:grid-cols-3 grid-cols-2 gap-5 items-center'>
+                            {
+                                [...Array(6)].map((_, index) => (
+                                    <Card className='py-3' key={index}>
+                                        <CardContent className='px-3'>
+                                            <div className='flex flex-col gap-y-2 items-start justify-between'>
+                                                <h2 className='xl:text-lg lg:text-base text-sm font-bold'>Chat Room {index + 1}</h2>
+                                                <p className='text-gray-500'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptate, quod.</p>
+                                                <Button type='button' className='cursor-pointer' variant={"default"} onClick={() => { }}>Join</Button>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            }
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
 
             <ChatDialogue
