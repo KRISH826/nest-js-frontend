@@ -272,10 +272,10 @@ export default function Home() {
   const activeMessages = activeRoomId === "general" ? socketMessages : (localMessages[activeRoomId] || [])
 
   return (
-    <div className="h-screen w-full flex flex-col justify-center items-center bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300 overflow-hidden">
+    <div className="h-screen w-full flex flex-col justify-center items-center bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300 p-2 sm:p-4 md:p-6 overflow-hidden">
       
       {/* Main Full-Screen Layout panel */}
-      <div className="relative w-full h-[96vh] flex flex-row border border-gray-100 dark:border-zinc-800/40 shadow-md overflow-hidden z-10">
+      <div className="relative w-full max-w-7xl h-[96vh] flex flex-row border border-zinc-200 dark:border-zinc-800/80 rounded-2xl shadow-lg bg-white dark:bg-zinc-900 overflow-hidden z-10">
         
         {/* Chat Sidebar Listing */}
         <div className={`${isSidebarOpen ? "flex w-full" : "hidden"} md:flex md:w-auto shrink-0 h-full`}>
