@@ -98,8 +98,8 @@ export function MessageList({
   return (
     <main className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-zinc-50/15 dark:bg-zinc-950/10 scrollbar-fade relative">
       {/* Workspace Welcome Banner */}
-      <div className="p-4 rounded-2xl bg-indigo-500/5 dark:bg-indigo-500/10 border border-indigo-500/10 dark:border-indigo-500/20 flex gap-3.5 mb-2 items-start animate-in fade-in slide-in-from-top-2 duration-300">
-        <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
+      <div className="p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 flex gap-3.5 mb-2 items-start animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="p-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shrink-0">
           <Sparkles className="w-4.5 h-4.5" />
         </div>
         <div>
@@ -177,7 +177,7 @@ export function MessageList({
                   <div
                     className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-xs ${
                       isUser
-                        ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-tr-none"
+                        ? "bg-indigo-650 text-white rounded-tr-none"
                         : isAi
                         ? "bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/15 text-zinc-800 dark:text-zinc-100 rounded-tl-none"
                         : "bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200/30 dark:border-zinc-800/30 text-zinc-850 dark:text-zinc-200 rounded-tl-none"

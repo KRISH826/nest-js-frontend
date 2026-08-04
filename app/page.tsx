@@ -272,14 +272,10 @@ export default function Home() {
   const activeMessages = activeRoomId === "general" ? socketMessages : (localMessages[activeRoomId] || [])
 
   return (
-    <div className="h-screen w-full flex flex-col justify-center items-center p-0 sm:p-4 md:p-6 bg-gradient-to-br from-indigo-50/50 via-zinc-100 to-indigo-100/50 dark:from-zinc-950 dark:via-zinc-900/40 dark:to-black transition-colors duration-300 overflow-hidden">
+    <div className="h-screen w-full flex flex-col justify-center items-center bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300 overflow-hidden">
       
-      {/* Background visual graphics */}
-      <div className="absolute top-1/4 left-1/4 -translate-y-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 translate-y-1/2 translate-x-1/2 w-[500px] h-[500px] bg-violet-500/10 dark:bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
-
-      {/* Main Glassmorphic Layout panel */}
-      <div className="relative w-full max-w-6xl h-full sm:h-[88vh] sm:max-h-[820px] flex flex-row rounded-none sm:rounded-2xl border bg-white/70 dark:bg-zinc-900/60 backdrop-blur-md border-zinc-200/50 dark:border-zinc-800/40 shadow-2xl overflow-hidden z-10">
+      {/* Main Full-Screen Layout panel */}
+      <div className="relative w-full h-[96vh] flex flex-row border border-gray-100 dark:border-zinc-800/40 shadow-md overflow-hidden z-10">
         
         {/* Chat Sidebar Listing */}
         <div className={`${isSidebarOpen ? "flex w-full" : "hidden"} md:flex md:w-auto shrink-0 h-full`}>

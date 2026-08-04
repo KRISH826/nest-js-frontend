@@ -10,11 +10,7 @@ import {
   Search,
   Plus,
   Hash,
-  MessageSquare,
   Sparkles,
-  ChevronDown,
-  Circle,
-  HelpCircle,
 } from "lucide-react"
 
 interface ChatSidebarProps {
@@ -25,8 +21,6 @@ interface ChatSidebarProps {
   onCreateRoomClick: () => void
 }
 
-type UserStatus = "online" | "idle" | "dnd" | "offline"
-
 export function ChatSidebar({
   rooms,
   activeRoomId,
@@ -35,16 +29,6 @@ export function ChatSidebar({
   onCreateRoomClick,
 }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [status, setStatus] = useState<UserStatus>("online")
-  const [showStatusMenu, setShowStatusMenu] = useState(false)
-
-  // Status configuration mapping
-  const statusConfig = {
-    online: { color: "bg-emerald-500", label: "Available" },
-    idle: { color: "bg-amber-500", label: "Away" },
-    dnd: { color: "bg-rose-500", label: "Busy" },
-    offline: { color: "bg-zinc-400", label: "Offline" },
-  }
 
   // Filter channels based on search query
   const filteredRooms = rooms.filter((room) =>
@@ -56,34 +40,17 @@ export function ChatSidebar({
 
   return (
     <aside className="w-full md:w-80 h-full flex flex-col border-r border-zinc-200/50 dark:border-zinc-800/40 bg-zinc-50/50 dark:bg-zinc-950/20 backdrop-blur-xs select-none">
-      {/* Header: User Profile & Status */}
+      {/* Header: User Profile */}
       <div className="p-4 border-b border-zinc-200/50 dark:border-zinc-800/40 flex items-center justify-between relative">
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <Avatar className="ring-2 ring-indigo-500/10 h-10 w-10">
-              <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-violet-600 text-white font-bold text-sm">
-                {userName ? userName.substring(0, 2).toUpperCase() : "ME"}
-              </AvatarFallback>
-            </Avatar>
-            <button
-              onClick={() => setShowStatusMenu(!showStatusMenu)}
-              className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-zinc-900 ${statusConfig[status].color} cursor-pointer shadow-sm flex items-center justify-center`}
-              title={`Change Status (Current: ${statusConfig[status].label})`}
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 max-w-[120px] truncate">
-              {userName || "Guest User"}
-            </span>
-            <button
-              onClick={() => setShowStatusMenu(!showStatusMenu)}
-              className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-0.5 hover:text-indigo-500 transition-colors"
-            >
-              <span>{statusConfig[status].label}</span>
-              <ChevronDown className="w-2.5 h-2.5" />
-            </button>
-          </div>
+          <Avatar className="ring-2 ring-indigo-500/10 h-10 w-10">
+            <AvatarFallback className="bg-indigo-600 text-white font-bold text-sm">
+              {userName ? userName.substring(0, 2).toUpperCase() : "ME"}
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 max-w-[150px] truncate">
+            {userName || "Guest User"}
+          </span>
         </div>
 
         {/* Create Chat Room button */}
@@ -96,36 +63,8 @@ export function ChatSidebar({
         >
           <Plus className="w-4 h-4" />
         </Button>
-
-        {/* Status Dropdown Menu */}
-        {showStatusMenu && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setShowStatusMenu(false)}
-            />
-            <div className="absolute left-4 top-14 w-40 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-zinc-900 p-1.5 shadow-xl z-50 animate-in fade-in slide-in-from-top-1 duration-100">
-              {Object.entries(statusConfig).map(([key, cfg]) => (
-                <button
-                  key={key}
-                  onClick={() => {
-                    setStatus(key as UserStatus)
-                    setShowStatusMenu(false)
-                  }}
-                  className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 text-left ${
-                    status === key
-                      ? "text-zinc-900 dark:text-zinc-100 bg-zinc-50 dark:bg-zinc-850"
-                      : "text-zinc-600 dark:text-zinc-400"
-                  }`}
-                >
-                  <span className={`w-2.5 h-2.5 rounded-full ${cfg.color}`} />
-                  <span>{cfg.label}</span>
-                </button>
-              ))}
-            </div>
-          </>
-        )}
       </div>
+
 
       {/* Search Input */}
       <div className="p-3">
@@ -161,19 +100,19 @@ export function ChatSidebar({
                 <button
                   key={room.id}
                   onClick={() => onSelectRoom(room.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all duration-200 group relative ${
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-all duration-200 group relative ${
                     isActive
-                      ? "bg-indigo-600 dark:bg-indigo-650 text-white shadow-md shadow-indigo-600/10"
-                      : "hover:bg-zinc-200/60 dark:hover:bg-zinc-900/50 text-zinc-700 dark:text-zinc-300"
+                      ? "bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-semibold"
+                      : "hover:bg-zinc-150/60 dark:hover:bg-zinc-900/40 text-zinc-600 dark:text-zinc-400"
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div
-                      className={`p-1.5 rounded-lg shrink-0 ${
+                      className={`p-1.5 rounded-lg shrink-0 transition-colors ${
                         isActive
-                          ? "bg-white/15 text-white"
+                          ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
                           : isSocketRoom
-                          ? "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400"
+                          ? "bg-indigo-500/5 text-indigo-550 dark:text-indigo-400/80"
                           : "bg-zinc-200/40 dark:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400"
                       }`}
                     >
@@ -190,8 +129,8 @@ export function ChatSidebar({
                       <span
                         className={`text-[10px] truncate leading-tight mt-0.5 max-w-[170px] ${
                           isActive
-                            ? "text-indigo-100"
-                            : "text-zinc-400 dark:text-zinc-500"
+                            ? "text-indigo-500/80 dark:text-indigo-400/70"
+                            : "text-zinc-400 dark:text-zinc-550"
                         }`}
                       >
                         {room.lastMessage || "No messages yet"}
@@ -204,7 +143,7 @@ export function ChatSidebar({
                     <span
                       className={`text-[9px] font-medium ${
                         isActive
-                          ? "text-indigo-150"
+                          ? "text-indigo-500 dark:text-indigo-400"
                           : "text-zinc-450 dark:text-zinc-550"
                       }`}
                     >
@@ -212,11 +151,7 @@ export function ChatSidebar({
                     </span>
                     {room.unreadCount && room.unreadCount > 0 ? (
                       <span
-                        className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shrink-0 min-w-4 text-center leading-none ${
-                          isActive
-                            ? "bg-white text-indigo-650"
-                            : "bg-indigo-600 text-white dark:bg-indigo-500"
-                        }`}
+                        className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full shrink-0 min-w-4 text-center leading-none bg-indigo-600 text-white dark:bg-indigo-500"
                       >
                         {room.unreadCount}
                       </span>

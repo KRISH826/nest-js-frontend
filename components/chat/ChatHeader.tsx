@@ -67,7 +67,7 @@ export function ChatHeader({
                 {roomName.substring(0, 2).toUpperCase()}
               </AvatarFallback>
             ) : (
-              <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-violet-600 text-white font-semibold text-xs flex items-center justify-center">
+              <AvatarFallback className="bg-indigo-600 text-white font-semibold text-xs flex items-center justify-center">
                 {roomName.toLowerCase().includes("general") ? "✨" : "#"}
               </AvatarFallback>
             )}
