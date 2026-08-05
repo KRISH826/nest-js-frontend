@@ -2,24 +2,120 @@
 
 import * as React from "react"
 import { useState, useEffect } from "react"
-import { Message } from "@/types/chat"
-import { INITIAL_MESSAGES } from "@/lib/mock-chat"
+import { Message, ChatRoom, SenderType } from "@/types/chat"
 import { NamePromptDialog } from "@/components/chat/NamePromptDialog"
 import { ChatHeader } from "@/components/chat/ChatHeader"
 import { MessageList } from "@/components/chat/MessageList"
 import { ChatInput } from "@/components/chat/ChatInput"
+import { ChatSidebar } from "@/components/chat/ChatSidebar"
+import ChatDialogue from "@/components/chat/ChatDialogue"
+import { useChatMessages } from "@/hooks/useChatMessage"
+import { RESPONDERS } from "@/lib/mock-chat"
 
 export default function Home() {
   const [userName, setUserName] = useState<string>("")
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+  const [isCreateRoomOpen, setIsCreateRoomOpen] = useState<boolean>(false)
   const [isMounted, setIsMounted] = useState<boolean>(false)
   const [theme, setTheme] = useState<"light" | "dark">("dark")
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES)
   const [searchQuery, setSearchQuery] = useState<string>("")
+
+  // Active chat state
+  const [activeRoomId, setActiveRoomId] = useState<string>("general")
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true) // true shows list on mobile
+
+  // Typist simulation state
+  const [typingState, setTypingState] = useState<{ isTyping: boolean; userName?: string }>({
+    isTyping: false,
+  })
+
+  // Hook for the real-time General socket chat
+  const { messages: socketMessages, sendMessage: sendSocketMessage } = useChatMessages(userName)
+
+  // Rooms configuration state (only channels, no direct messages)
+  const [rooms, setRooms] = useState<ChatRoom[]>([
+    {
+      id: "general",
+      name: "General Workspace",
+      type: "channel",
+      lastMessage: "Welcome to Aether Workspace! Real-time sockets enabled.",
+      timestamp: "10:26 AM",
+      unreadCount: 0,
+      description: "Main workspace communication room, powered by real-time WebSocket connection to the NestJS backend.",
+      membersCount: 3,
+    },
+    {
+      id: "design-sync",
+      name: "design-system",
+      type: "channel",
+      lastMessage: "Should we use glassmorphism for the popups?",
+      timestamp: "Yesterday",
+      unreadCount: 2,
+      description: "Dedicated to UI components, visual designs, theme styling, and brand systems discussions.",
+      membersCount: 3,
+    },
+    {
+      id: "marketing-campaign",
+      name: "marketing-dev",
+      type: "channel",
+      lastMessage: "Sarah: The copy sheets are ready in Google Drive.",
+      timestamp: "Aug 02",
+      unreadCount: 0,
+      description: "Discuss campaigns, analytics, brand marketing strategies, and content distribution plans.",
+      membersCount: 3,
+    },
+  ])
+
+  // Mock message archives for the local channels
+  const [localMessages, setLocalMessages] = useState<Record<string, Message[]>>({
+    "design-sync": [
+      {
+        id: "ds1",
+        sender: "Sarah Jenkins",
+        senderType: "other",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+        content: "Hey team! Let's build out the design tokens. I've designed some templates.",
+        timestamp: "09:12 AM",
+      },
+      {
+        id: "ds2",
+        sender: "Alex Rivers",
+        senderType: "other",
+        avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+        content: "Awesome, the color-mix setup in Tailwind v4 is extremely elegant. I've mapped the colors.",
+        timestamp: "09:15 AM",
+      },
+      {
+        id: "ds3",
+        sender: "Sarah Jenkins",
+        senderType: "other",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+        content: "Should we use glassmorphism for the popups?",
+        timestamp: "Yesterday",
+      },
+    ],
+    "marketing-campaign": [
+      {
+        id: "m1",
+        sender: "Alex Rivers",
+        senderType: "other",
+        avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+        content: "Are the marketing copy sheets finalized yet? We need to draft the release posts.",
+        timestamp: "Aug 02",
+      },
+      {
+        id: "m2",
+        sender: "Sarah Jenkins",
+        senderType: "other",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+        content: "Yes, they are in the shared Drive folder. I will add the links to details pane.",
+        timestamp: "Aug 02",
+      },
+    ],
+  })
 
   // Avoid hydration mismatch by waiting for client-side mount
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true)
     const storedName = localStorage.getItem("chat-username")
     if (storedName) {
@@ -68,23 +164,91 @@ export default function Home() {
   }
 
   const handleSendMessage = (content: string) => {
-    // Create user message
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      sender: userName,
-      senderType: "user",
-      avatar: "",
-      content: content,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    }
+    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    
+    if (activeRoomId === "general") {
+      // General is connected to real-time socket
+      sendSocketMessage(content)
+      
+      // Update sidebar preview for General
+      setRooms((prev) =>
+        prev.map((r) =>
+          r.id === "general"
+            ? { ...r, lastMessage: content, timestamp }
+            : r
+        )
+      )
+    } else {
+      // Local group chat
+      const userMsg: Message = {
+        id: Date.now().toString(),
+        sender: userName,
+        senderType: "user",
+        content: content,
+        timestamp,
+      }
 
-    setMessages((prev) => [...prev, userMsg])
+      setLocalMessages((prev) => ({
+        ...prev,
+        [activeRoomId]: [...(prev[activeRoomId] || []), userMsg],
+      }))
+
+      // Update sidebar preview
+      setRooms((prev) =>
+        prev.map((r) =>
+          r.id === activeRoomId
+            ? { ...r, lastMessage: content, timestamp }
+            : r
+        )
+      )
+
+      // Trigger automatic mock response with a typing animation
+      const activeRoom = rooms.find((r) => r.id === activeRoomId)
+      if (!activeRoom) return
+
+      setTypingState({ isTyping: true, userName: activeRoom.name })
+
+      setTimeout(() => {
+        // Channels pull random replies from Sarah or Alex
+        const eligibleResponders = RESPONDERS.filter(r => r.name !== "Aether AI")
+        const responder = eligibleResponders[Math.floor(Math.random() * eligibleResponders.length)]
+
+        const templates = responder.templates
+        const randomTemplate = templates[Math.floor(Math.random() * templates.length)]
+        const replyText = randomTemplate.replace("{name}", userName)
+        const responseTimestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+
+        const replyMsg: Message = {
+          id: (Date.now() + 1).toString(),
+          sender: responder.name,
+          senderType: "other",
+          avatar: responder.avatar,
+          content: replyText,
+          timestamp: responseTimestamp,
+        }
+
+        setLocalMessages((prev) => ({
+          ...prev,
+          [activeRoomId]: [...(prev[activeRoomId] || []), replyMsg],
+        }))
+
+        // Update sidebar preview
+        setRooms((prev) =>
+          prev.map((r) =>
+            r.id === activeRoomId
+              ? { ...r, lastMessage: replyText, timestamp: responseTimestamp }
+              : r
+          )
+        )
+
+        setTypingState({ isTyping: false })
+      }, 1500)
+    }
   }
 
   const handleResetProfile = () => {
     localStorage.removeItem("chat-username")
     setUserName("")
-    setMessages(INITIAL_MESSAGES)
     setIsDialogOpen(true)
   }
 
@@ -92,47 +256,82 @@ export default function Home() {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"))
   }
 
+  const handleSelectRoom = (roomId: string) => {
+    setActiveRoomId(roomId)
+    // Clear unread count when switching into a room
+    setRooms((prev) =>
+      prev.map((r) => (r.id === roomId ? { ...r, unreadCount: 0 } : r))
+    )
+    setIsSidebarOpen(false) // On mobile: hide sidebar and show chat view
+  }
+
+  // Get configuration of current active room
+  const activeRoom = rooms.find((r) => r.id === activeRoomId) || rooms[0]
+  
+  // Choose which message list to display
+  const activeMessages = activeRoomId === "general" ? socketMessages : (localMessages[activeRoomId] || [])
+
   return (
-    <div className="h-screen w-full flex flex-col justify-center items-center p-0 sm:p-4 md:p-6 bg-gradient-to-br from-indigo-50/50 via-zinc-100 to-indigo-100/50 dark:from-zinc-950 dark:via-zinc-900/40 dark:to-black transition-colors duration-300">
+    <div className="h-screen w-full flex flex-col justify-center items-center bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300 p-2 sm:p-4 md:p-6 overflow-hidden">
+      
+      {/* Main Full-Screen Layout panel */}
+      <div className="relative w-full max-w-7xl h-[96vh] flex flex-row border border-zinc-200 dark:border-zinc-800/80 rounded-2xl shadow-lg bg-white dark:bg-zinc-900 overflow-hidden z-10">
+        
+        {/* Chat Sidebar Listing */}
+        <div className={`${isSidebarOpen ? "flex w-full" : "hidden"} md:flex md:w-auto shrink-0 h-full`}>
+          <ChatSidebar
+            rooms={rooms}
+            activeRoomId={activeRoomId}
+            onSelectRoom={handleSelectRoom}
+            userName={userName}
+            onCreateRoomClick={() => setIsCreateRoomOpen(true)}
+          />
+        </div>
 
-      {/* Background visual embellishment */}
-      <div className="absolute top-1/4 left-1/4 -translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 translate-y-1/2 translate-x-1/2 w-96 h-96 bg-violet-500/10 dark:bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
+        {/* Active Chat Conversation Container */}
+        <div className={`flex-1 flex flex-col h-full overflow-hidden ${isSidebarOpen ? "hidden md:flex" : "flex"}`}>
+          {/* Header Panel */}
+          <ChatHeader
+            roomName={activeRoom.name}
+            isDm={false}
+            membersCount={activeRoom.membersCount}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            theme={theme}
+            onThemeToggle={toggleTheme}
+            onResetProfile={handleResetProfile}
+            onToggleSidebar={() => setIsSidebarOpen(true)} // Back button on mobile
+          />
 
-      {/* Main Glassmorphic Chat Panel */}
-      <div className="relative w-full max-w-5xl h-full sm:h-[85vh] sm:max-h-[800px] flex flex-col rounded-none sm:rounded-2xl border bg-white/70 dark:bg-zinc-900/60 backdrop-blur-md border-zinc-200/50 dark:border-zinc-800/40 shadow-2xl overflow-hidden z-10">
+          {/* Messages Stream */}
+          <MessageList
+            userName={userName}
+            messages={activeMessages}
+            searchQuery={searchQuery}
+            isTyping={typingState.isTyping}
+            typingUserName={typingState.userName}
+            roomName={activeRoom.name}
+          />
 
-        {/* Header Component */}
-        <ChatHeader
-          userName={userName}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          theme={theme}
-          onThemeToggle={toggleTheme}
-          onResetProfile={handleResetProfile}
-        />
-
-        {/* Message Logs Component */}
-        <MessageList
-          userName={userName}
-          messages={messages}
-          searchQuery={searchQuery}
-        />
-
-        {/* Footer Input Bar Component */}
-        <ChatInput
-          onSendMessage={handleSendMessage}
-          disabled={false}
-        />
+          {/* Form message input */}
+          <ChatInput
+            onSendMessage={handleSendMessage}
+            disabled={false}
+          />
+        </div>
       </div>
 
-      {/* Username Prompter Dialog component */}
+      {/* Username prompt dialog on first load */}
       <NamePromptDialog
         isOpen={isDialogOpen}
         onNameSubmit={handleNameSubmit}
       />
+
+      {/* Create chat room dialog */}
+      <ChatDialogue
+        isOpen={isCreateRoomOpen}
+        onClose={() => setIsCreateRoomOpen(false)}
+      />
     </div>
   )
 }
-
-

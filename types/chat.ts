@@ -22,3 +22,16 @@ export interface Responder {
   avatar: string
   templates: string[]
 }
+
+export interface ChatRoom {
+  id: string
+  name: string
+  type: "channel" | "dm"
+  avatar?: string
+  lastMessage?: string
+  timestamp?: string
+  unreadCount?: number
+  status?: "online" | "offline" | "idle" | "dnd"
+  description?: string
+  membersCount?: number
+}
