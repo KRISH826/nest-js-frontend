@@ -1,7 +1,8 @@
 import React from 'react'
+import OtpPage from '@/components/auth/otp/OtpPage'
 
-export const page = () => {
+export default function Page() {
     return (
-        <div>page</div>
+        <OtpPage />
     )
 }
