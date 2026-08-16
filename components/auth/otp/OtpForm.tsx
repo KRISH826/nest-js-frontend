@@ -20,6 +20,8 @@ import {
     InputOTPSlot,
 } from "@/components/ui/input-otp"
 
+import { ArrowLeft } from "lucide-react"
+
 export function OtpForm({
     className,
     ...props
@@ -53,6 +55,11 @@ export function OtpForm({
                             </Field>
                             <Field>
                                 <Button type="submit" className="w-full">Verify Account</Button>
+                                <Button variant="outline" type="button" asChild className="w-full">
+                                    <a href="/login" className="flex items-center justify-center gap-2">
+                                        <ArrowLeft className="size-4" /> Back to Login Account
+                                    </a>
+                                </Button>
                                 <FieldDescription className="text-center">
                                     Didn&apos;t receive the code? <a href="#">Resend</a>
                                 </FieldDescription>
