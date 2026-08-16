@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { socket } from "@/lib/ws"
+import { socket } from "@/lib/socket/ws"
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
