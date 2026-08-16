@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/tailwind/utils";
 import { SocketProvider } from "@/provider/SocketProvider";
+import StoreProvider from "@/provider/StoreProvider";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -33,9 +34,11 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable)}
     >
       <body className="min-h-full flex flex-col">
-        <SocketProvider>
-          {children}
-        </SocketProvider>
+        <StoreProvider>
+          <SocketProvider>
+            {children}
+          </SocketProvider>
+        </StoreProvider>
       </body>
     </html>
   );
