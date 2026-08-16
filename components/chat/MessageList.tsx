@@ -8,12 +8,6 @@ import {
   Bot,
   Sparkles,
   HelpCircle,
-  Smile,
-  Heart,
-  ThumbsUp,
-  Flame,
-  Laugh,
-  MoreHorizontal,
   Reply,
 } from "lucide-react"
 

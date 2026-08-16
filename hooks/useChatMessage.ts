@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { socket } from "@/lib/ws";
+import { socket } from "@/lib/socket/ws";
 import { Message, ChatMessage } from "@/types/chat";
 
 function formatTimestamp(ts: number): string {

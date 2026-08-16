@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { MessageSquareCode } from "lucide-react"
-import { socket } from "@/lib/ws"
+import { socket } from "@/lib/socket/ws"
 
 interface NamePromptDialogProps {
   isOpen: boolean

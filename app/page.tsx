@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { useState, useEffect } from "react"
-import { Message, ChatRoom, SenderType } from "@/types/chat"
+import { useState, useEffect, useSyncExternalStore } from "react"
+import { Message, ChatRoom } from "@/types/chat"
 import { NamePromptDialog } from "@/components/chat/NamePromptDialog"
 import { ChatHeader } from "@/components/chat/ChatHeader"
 import { MessageList } from "@/components/chat/MessageList"
@@ -12,11 +12,13 @@ import ChatDialogue from "@/components/chat/ChatDialogue"
 import { useChatMessages } from "@/hooks/useChatMessage"
 import { RESPONDERS } from "@/lib/mock-chat"
 
+const emptySubscribe = () => () => {}
+
 export default function Home() {
   const [userName, setUserName] = useState<string>("")
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState<boolean>(false)
-  const [isMounted, setIsMounted] = useState<boolean>(false)
+  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false)
   const [theme, setTheme] = useState<"light" | "dark">("dark")
   const [searchQuery, setSearchQuery] = useState<string>("")
 
@@ -116,7 +118,6 @@ export default function Home() {
 
   // Avoid hydration mismatch by waiting for client-side mount
   useEffect(() => {
-    setIsMounted(true)
     const storedName = localStorage.getItem("chat-username")
     if (storedName) {
       setUserName(storedName)

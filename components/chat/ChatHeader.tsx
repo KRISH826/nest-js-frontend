@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarImage, AvatarFallback, AvatarGroup, AvatarGroupCount } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   Search,
   Sun,
@@ -12,7 +12,6 @@ import {
   Video,
   Phone,
   Menu,
-  Sparkles,
   Users2,
   Lock,
 } from "lucide-react"
