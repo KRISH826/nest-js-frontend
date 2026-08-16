@@ -158,3 +158,12 @@
 .dark .scrollbar-fade:hover::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.25);
 }
+
+button,
+button:hover {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
