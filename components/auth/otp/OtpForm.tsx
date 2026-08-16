@@ -40,16 +40,13 @@ export function OtpForm({
                                 <FieldLabel htmlFor="otp" className="sr-only">One-Time Password</FieldLabel>
                                 <div className="flex justify-center w-full">
                                     <InputOTP maxLength={6} id="otp">
-                                        <InputOTPGroup>
-                                            <InputOTPSlot index={0} />
-                                            <InputOTPSlot index={1} />
-                                            <InputOTPSlot index={2} />
-                                        </InputOTPGroup>
-                                        <InputOTPSeparator />
-                                        <InputOTPGroup>
-                                            <InputOTPSlot index={3} />
-                                            <InputOTPSlot index={4} />
-                                            <InputOTPSlot index={5} />
+                                        <InputOTPGroup className="gap-2">
+                                            <InputOTPSlot index={0} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                            <InputOTPSlot index={1} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                            <InputOTPSlot index={2} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                            <InputOTPSlot index={3} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                            <InputOTPSlot index={4} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                            <InputOTPSlot index={5} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
                                         </InputOTPGroup>
                                     </InputOTP>
                                 </div>
