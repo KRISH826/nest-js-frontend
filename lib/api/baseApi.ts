@@ -8,7 +8,7 @@ import {
 } from '@reduxjs/toolkit/query/react';
 
 const rawBaseQuery = fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4040',
+    baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL!,
     credentials: 'include', // Sends & receives HTTP-only cookies
 });
 
