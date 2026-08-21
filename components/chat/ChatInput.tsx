@@ -49,9 +49,9 @@ export function ChatInput() {
             >
               <ImageIcon className="w-4.5 h-4.5" />
             </Button>
-            
+
             <div className="w-px h-4 bg-slate-355 dark:bg-zinc-800 mx-1.5" />
-            
+
             <Button
               type="button"
               variant="ghost"
@@ -92,16 +92,15 @@ export function ChatInput() {
               onChange={(e) => setValue(e.target.value)}
               className="w-full pr-12 pl-4 py-3 bg-slate-100 dark:bg-zinc-800/80 text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-500 rounded-xl border border-transparent focus:bg-white dark:focus:bg-zinc-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-sm h-11"
             />
-            
+
             {/* Embedded Send Button */}
             <button
               type="submit"
               disabled={!value.trim()}
-              className={`absolute right-2.5 bottom-2 p-1.5 rounded-lg transition-all ${
-                value.trim()
+              className={`absolute right-2.5 bottom-2 p-1.5 rounded-lg transition-all ${value.trim()
                   ? "bg-indigo-600 text-white hover:bg-indigo-550 shadow-md cursor-pointer"
                   : "text-slate-350 dark:text-zinc-650 cursor-not-allowed"
-              }`}
+                }`}
             >
               <Send className="w-4 h-4" />
             </button>
