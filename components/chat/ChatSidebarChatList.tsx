@@ -17,9 +17,10 @@ interface Room {
 
 interface ChatSidebarChatListProps {
   filteredRooms: Room[]
+  onSelectChat: () => void
 }
 
-export function ChatSidebarChatList({ filteredRooms }: ChatSidebarChatListProps) {
+export function ChatSidebarChatList({ filteredRooms, onSelectChat }: ChatSidebarChatListProps) {
   const isSelected = (roomId: string) => roomId === "design-sync"
 
   const renderRoomAvatar = (room: Room) => {
@@ -58,6 +59,7 @@ export function ChatSidebarChatList({ filteredRooms }: ChatSidebarChatListProps)
           return (
             <div
               key={room.id}
+              onClick={onSelectChat}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all ${
                 selected
                   ? "bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/30 text-slate-900 dark:text-zinc-100 shadow-[0_2px_6px_rgba(99,102,241,0.06)]"
@@ -73,7 +75,7 @@ export function ChatSidebarChatList({ filteredRooms }: ChatSidebarChatListProps)
                   } ${room.unreadCount > 0 ? "font-bold text-indigo-600 dark:text-indigo-400" : ""}`}>
                     {room.name}
                   </h3>
-                  <span className="text-[10px] sm:text-xs text-slate-400 dark:text-zinc-550 whitespace-nowrap">
+                  <span className="text-[10px] sm:text-xs text-slate-400 dark:text-zinc-555 whitespace-nowrap">
                     {room.timestamp}
                   </span>
                 </div>

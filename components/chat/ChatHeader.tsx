@@ -14,10 +14,15 @@ import {
   Phone,
   Users2,
   Lock,
-  Info
+  Info,
+  ArrowLeft
 } from "lucide-react"
 
-export function ChatHeader() {
+interface ChatHeaderProps {
+  onBack: () => void
+}
+
+export function ChatHeader({ onBack }: ChatHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [theme, setTheme] = useState<"light" | "dark">("dark")
 
@@ -33,9 +38,21 @@ export function ChatHeader() {
   }
 
   return (
-    <header className="px-6 py-4.5 flex flex-row justify-between items-center border-b border-slate-200/40 dark:border-zinc-800/60 bg-white dark:bg-zinc-950 flex-shrink-0 select-none">
-      <div className="flex items-center gap-3 min-w-0">
-        <Avatar className="h-9 w-9 rounded-xl border border-zinc-150 dark:border-zinc-800">
+    <header className="px-4 sm:px-6 py-4.5 flex flex-row justify-between items-center border-b border-slate-200/40 dark:border-zinc-800/60 bg-white dark:bg-zinc-950 flex-shrink-0 select-none">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        
+        {/* Mobile Back Action Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onBack}
+          className="block sm:hidden text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200 h-8 w-8 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg cursor-pointer"
+          title="Back to messages list"
+        >
+          <ArrowLeft className="w-4.5 h-4.5" />
+        </Button>
+
+        <Avatar className="h-9 w-9 rounded-xl border border-zinc-150 dark:border-zinc-800 shrink-0">
           <AvatarFallback className="bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
             #
           </AvatarFallback>
@@ -46,17 +63,17 @@ export function ChatHeader() {
             <h1 className="font-bold text-slate-800 dark:text-zinc-100 tracking-tight text-sm truncate">
               Design System & UI Sync
             </h1>
-            <Lock className="w-3 h-3 text-slate-400 dark:text-zinc-550" />
+            <Lock className="w-3 h-3 text-slate-400 dark:text-zinc-550 shrink-0" />
           </div>
 
           <p className="text-[10px] text-slate-450 dark:text-zinc-500 flex items-center gap-1 mt-0.5 leading-none">
-            <Users2 className="w-3 h-3 text-slate-400" />
+            <Users2 className="w-3 h-3 text-slate-400 shrink-0" />
             <span>8 members</span>
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
         <div className="relative max-w-[130px] sm:max-w-[160px] hidden sm:block">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
           <input
@@ -71,7 +88,7 @@ export function ChatHeader() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8.5 w-8.5 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-slate-105 dark:hover:bg-zinc-850 rounded-lg cursor-pointer"
+          className="h-8.5 w-8.5 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg cursor-pointer"
           title="Start Audio Call"
         >
           <Phone className="w-4 h-4" />
@@ -79,7 +96,7 @@ export function ChatHeader() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8.5 w-8.5 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-slate-105 dark:hover:bg-zinc-850 rounded-lg cursor-pointer"
+          className="h-8.5 w-8.5 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg cursor-pointer"
           title="Start Video Call"
         >
           <Video className="w-4 h-4" />
