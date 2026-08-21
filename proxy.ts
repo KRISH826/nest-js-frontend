@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 
 // 1. Define paths that do not require session validation
 const PUBLIC_FILE_PATTERN = /\.(.*)$/ // e.g. favicon.ico, images, fonts
-const AUTH_ROUTES = ['/login', '/register', '/otp']
+const AUTH_ROUTES = ['/login', '/register', '/otp', "/"]
 const PROTECTED_ROUTES = ['/chat-list', '/profile'] // Add other protected routes here
 
 export const config = {
