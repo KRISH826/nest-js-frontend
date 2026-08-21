@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { Globe, Lock } from "lucide-react"
 
 interface CreateRoomDialogProps {
@@ -39,7 +40,7 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
         onPointerDownOutside={(e) => e.preventDefault()}
       >
         <DialogHeader className="space-y-1">
-          <DialogTitle className="text-lg font-bold text-slate-905 dark:text-zinc-50">
+          <DialogTitle className="text-lg font-bold text-slate-905 dark:text-zinc-55">
             Create a channel
           </DialogTitle>
           <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
@@ -49,10 +50,10 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-3">
           {/* Channel Name */}
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 dark:text-zinc-350">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold text-slate-700 dark:text-zinc-350">
               Channel name
-            </label>
+            </Label>
             <Input
               type="text"
               placeholder="e.g. marketing-dev"
@@ -64,10 +65,10 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
           </div>
 
           {/* Description */}
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 dark:text-zinc-350">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold text-slate-700 dark:text-zinc-350">
               Description <span className="text-[10px] text-slate-400 font-normal">(optional)</span>
-            </label>
+            </Label>
             <textarea
               rows={2}
               placeholder="What's this channel about?"
@@ -79,9 +80,9 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
 
           {/* Privacy Settings Card Selectors */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-700 dark:text-zinc-350 block">
+            <Label className="text-xs font-bold text-slate-700 dark:text-zinc-350 block">
               Privacy
-            </label>
+            </Label>
             
             {/* Public Option Card */}
             <div 
@@ -92,7 +93,7 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
                   : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-850"
               }`}
             >
-              <div className="p-1 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 rounded-lg flex-shrink-0 mt-0.5">
+              <div className="p-1 bg-slate-100 dark:bg-zinc-805 text-slate-650 dark:text-zinc-400 rounded-lg flex-shrink-0 mt-0.5">
                 <Globe className="w-4 h-4" />
               </div>
               <div>
@@ -110,7 +111,7 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
                   : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-850"
               }`}
             >
-              <div className="p-1 bg-slate-100 dark:bg-zinc-800 text-slate-650 dark:text-zinc-400 rounded-lg flex-shrink-0 mt-0.5">
+              <div className="p-1 bg-slate-100 dark:bg-zinc-805 text-slate-650 dark:text-zinc-400 rounded-lg flex-shrink-0 mt-0.5">
                 <Lock className="w-4 h-4" />
               </div>
               <div>
@@ -124,15 +125,14 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
           <DialogFooter className="flex items-center justify-end gap-2 pt-2.5 border-t border-slate-100 dark:border-zinc-800/60 mt-1">
             <Button
               type="button"
-              variant="ghost"
               onClick={onClose}
-              className="text-xs font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer h-9 px-4"
+              className="bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-850 dark:text-zinc-200 h-10 px-6 font-bold cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="text-xs font-semibold bg-indigo-600 hover:bg-indigo-550 text-white rounded-xl shadow-md cursor-pointer h-9 px-4"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white h-10 px-6 font-bold cursor-pointer"
             >
               Create
             </Button>

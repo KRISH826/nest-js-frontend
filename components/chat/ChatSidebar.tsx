@@ -77,13 +77,13 @@ export function ChatSidebar() {
     if (room.type === "direct") {
       return (
         <div className="relative flex-shrink-0">
-          <Avatar className="h-10 w-10 ring-2 ring-zinc-200/10">
+          <Avatar className="h-9 w-9 rounded-xl border border-zinc-150 dark:border-zinc-800">
             <AvatarImage src={room.avatar} alt={room.name} className="object-cover" />
-            <AvatarFallback className="bg-indigo-650 text-white font-bold text-xs">
+            <AvatarFallback className="bg-indigo-650 text-white font-bold text-[10px]">
               {room.name.substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-zinc-900 ${
+          <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border border-white dark:border-zinc-900 ${
             room.status === "online" ? "bg-emerald-500" :
             room.status === "away" ? "bg-amber-500" : "bg-zinc-400"
           }`} />
@@ -91,23 +91,23 @@ export function ChatSidebar() {
       )
     } else {
       return (
-        <div className="relative w-10 h-10 flex-shrink-0">
-          <img src={room.avatar[0]} className="absolute top-0 left-0 w-6.5 h-6.5 rounded-full object-cover border border-white dark:border-zinc-900" alt="Avatar 1" />
-          <img src={room.avatar[1]} className="absolute bottom-0 right-0 w-6.5 h-6.5 rounded-full object-cover border border-white dark:border-zinc-900 z-10" alt="Avatar 2" />
+        <div className="relative w-9 h-9 flex-shrink-0">
+          <img src={room.avatar[0]} className="absolute top-0 left-0 w-6 h-6 rounded-lg object-cover border border-white dark:border-zinc-900" alt="Avatar 1" />
+          <img src={room.avatar[1]} className="absolute bottom-0 right-0 w-6 h-6 rounded-lg object-cover border border-white dark:border-zinc-900 z-10" alt="Avatar 2" />
         </div>
       )
     }
   }
 
   return (
-    <div className="w-full sm:w-96 h-full bg-white dark:bg-zinc-900/90 border-r border-slate-200/60 dark:border-zinc-800/80 flex-shrink-0 flex flex-col select-none relative transition-all duration-300">
+    <div className="w-full sm:w-[30%] h-full bg-zinc-50 dark:bg-zinc-900/60 border-r border-slate-200/50 dark:border-zinc-800/80 flex-shrink-0 flex flex-col select-none relative transition-all duration-300">
       
       {/* Sidebar Header */}
-      <div className="px-5 pt-5 pb-3">
+      <div className="px-6 pt-6 pb-4">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-zinc-100 flex items-center gap-2">
-            Chat
-            <span className="text-xs bg-indigo-100 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 font-semibold px-2 py-0.5 rounded-full">
+          <h1 className="text-lg font-bold tracking-tight text-slate-800 dark:text-zinc-100 flex items-center gap-2">
+            Messages
+            <span className="text-[10px] bg-slate-200/70 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 font-medium px-2 py-0.5 rounded-md">
               {rooms.length}
             </span>
           </h1>
@@ -115,55 +115,49 @@ export function ChatSidebar() {
             onClick={() => setIsCreateRoomOpen(true)}
             variant="ghost"
             size="icon"
-            className="h-8.5 w-8.5 text-zinc-500 hover:text-zinc-850 hover:bg-slate-100 dark:hover:bg-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 rounded-lg cursor-pointer"
+            className="h-8 w-8 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg cursor-pointer text-slate-500 hover:text-slate-850 dark:text-zinc-400 dark:hover:text-zinc-200"
             title="Create New Room"
           >
-            <Plus className="w-4.5 h-4.5" />
+            <Plus className="w-4 h-4" />
           </Button>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative mb-3.5">
-          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-            <Search className="w-4 h-4" />
+        {/* Minimal Search Input */}
+        <div className="relative mb-4">
+          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <Search className="w-3.5 h-3.5" />
           </span>
-          <Input
+          <input
             type="text"
-            placeholder="Search chat list..."
+            placeholder="Search channels & users..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm bg-slate-100 dark:bg-zinc-800/60 text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-500 rounded-lg border border-transparent focus:bg-white dark:focus:bg-zinc-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all h-9.5"
+            className="w-full pl-9 pr-4 py-2 text-xs bg-slate-100/60 dark:bg-zinc-950/40 text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-500 rounded-lg border border-transparent focus:bg-white dark:focus:bg-zinc-950 focus:border-zinc-300 dark:focus:border-zinc-800 outline-none transition-all h-8.5"
           />
         </div>
 
-        {/* Filter Pills Tabs */}
-        <div className="flex items-center gap-1 border-b border-slate-100 dark:border-zinc-800/40 pb-2 overflow-x-auto scrollbar-none">
+        {/* Minimal Filter Tabs */}
+        <div className="flex items-center gap-4 text-xs font-semibold text-slate-400 dark:text-zinc-500 border-b border-slate-200/40 dark:border-zinc-800/40 pb-2.5">
           <button
             onClick={() => setActiveFilter("all")}
-            className={`px-3 py-1 text-xs font-semibold rounded-full transition-all cursor-pointer ${
-              activeFilter === "all"
-                ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900"
-                : "text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800"
+            className={`cursor-pointer transition-colors hover:text-slate-700 dark:hover:text-zinc-200 ${
+              activeFilter === "all" ? "text-indigo-600 dark:text-indigo-400 font-bold" : ""
             }`}
           >
-            All
+            All chats
           </button>
           <button
             onClick={() => setActiveFilter("unread")}
-            className={`px-3 py-1 text-xs font-semibold rounded-full transition-all cursor-pointer ${
-              activeFilter === "unread"
-                ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900"
-                : "text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800"
+            className={`cursor-pointer transition-colors hover:text-slate-700 dark:hover:text-zinc-200 ${
+              activeFilter === "unread" ? "text-indigo-600 dark:text-indigo-400 font-bold" : ""
             }`}
           >
             Unread
           </button>
           <button
             onClick={() => setActiveFilter("groups")}
-            className={`px-3 py-1 text-xs font-semibold rounded-full transition-all cursor-pointer ${
-              activeFilter === "groups"
-                ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900"
-                : "text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800"
+            className={`cursor-pointer transition-colors hover:text-slate-700 dark:hover:text-zinc-200 ${
+              activeFilter === "groups" ? "text-indigo-600 dark:text-indigo-400 font-bold" : ""
             }`}
           >
             Groups
@@ -171,8 +165,8 @@ export function ChatSidebar() {
         </div>
       </div>
 
-      {/* Room list items */}
-      <div className="flex-1 overflow-y-auto px-2 pb-4 space-y-1 scrollbar-thin">
+      {/* Professional Room List */}
+      <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-0.5 scrollbar-thin">
         {filteredRooms.length > 0 ? (
           filteredRooms.map((room) => {
             const isSelected = room.id === "design-sync"
@@ -180,39 +174,37 @@ export function ChatSidebar() {
             return (
               <div
                 key={room.id}
-                className={`flex items-center gap-3.5 px-3 py-3 rounded-xl cursor-pointer transition-all ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all ${
                   isSelected
-                    ? "bg-indigo-500/10 dark:bg-indigo-500/15 border-l-3 border-indigo-500 text-slate-900 dark:text-zinc-100 shadow-sm"
-                    : "hover:bg-slate-100/70 dark:hover:bg-zinc-800/40 text-slate-655 dark:text-zinc-300"
+                    ? "bg-white dark:bg-zinc-900 border border-slate-200/50 dark:border-zinc-800 text-slate-900 dark:text-zinc-100 shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
+                    : "hover:bg-slate-200/35 dark:hover:bg-zinc-800/20 text-slate-600 dark:text-zinc-400 border border-transparent"
                 }`}
               >
                 {renderRoomAvatar(room)}
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    <h3 className={`text-sm font-semibold truncate ${
-                      isSelected ? "text-indigo-600 dark:text-indigo-400" : "text-slate-850 dark:text-zinc-200"
-                    } ${room.unreadCount > 0 ? "font-bold" : ""}`}>
+                    <h3 className={`text-xs sm:text-sm font-semibold truncate ${
+                      isSelected ? "text-slate-900 dark:text-zinc-100" : "text-slate-800 dark:text-zinc-300"
+                    } ${room.unreadCount > 0 ? "font-bold text-indigo-600 dark:text-indigo-400" : ""}`}>
                       {room.name}
                     </h3>
-                    <span className="text-[10px] text-slate-400 dark:text-zinc-555 whitespace-nowrap text-right">
+                    <span className="text-[9px] text-slate-400 dark:text-zinc-550 whitespace-nowrap">
                       {room.timestamp}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <p className={`text-xs truncate pr-2 ${
+                    <p className={`text-[11px] truncate pr-2 ${
                       room.unreadCount > 0 
-                        ? "text-slate-900 dark:text-zinc-100 font-medium" 
-                        : "text-slate-400 dark:text-zinc-555"
+                        ? "text-slate-900 dark:text-zinc-100 font-semibold" 
+                        : "text-slate-450 dark:text-zinc-500"
                     }`}>
                       {room.lastMessage}
                     </p>
                     
                     {room.unreadCount > 0 ? (
-                      <span className="flex-shrink-0 flex items-center justify-center min-w-4.5 h-4.5 px-1 bg-indigo-600 text-[10px] font-bold text-white rounded-full">
-                        {room.unreadCount}
-                      </span>
+                      <span className="w-1.5 h-1.5 bg-indigo-600 dark:bg-indigo-455 rounded-full flex-shrink-0" />
                     ) : null}
                   </div>
                 </div>
@@ -221,8 +213,8 @@ export function ChatSidebar() {
           })
         ) : (
           <div className="flex flex-col items-center justify-center py-10 text-center">
-            <SearchCode className="w-9 h-9 text-slate-300 dark:text-zinc-700 mb-2" />
-            <p className="text-sm font-medium text-slate-400 dark:text-zinc-555">No chats found</p>
+            <SearchCode className="w-8 h-8 text-slate-300 dark:text-zinc-700 mb-2 animate-pulse" />
+            <p className="text-xs font-semibold text-slate-400 dark:text-zinc-555 font-mono">No active threads</p>
           </div>
         )}
       </div>

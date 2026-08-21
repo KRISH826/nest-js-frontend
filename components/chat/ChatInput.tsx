@@ -17,94 +17,97 @@ export function ChatInput() {
   const [value, setValue] = useState("")
 
   return (
-    <footer className="p-4 bg-white dark:bg-zinc-900 border-t border-slate-200/50 dark:border-zinc-800/80 flex-shrink-0">
-      <form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
-        {/* Formatting/Actions Toolbar */}
-        <div className="flex items-center justify-between border border-slate-200 dark:border-zinc-800 rounded-xl bg-slate-50 dark:bg-zinc-950 px-3 py-1.5 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all select-none">
-          <div className="flex items-center gap-1">
+    <footer className="p-4 bg-white dark:bg-zinc-950 border-t border-slate-200/40 dark:border-zinc-800/60 flex-shrink-0">
+      <form 
+        onSubmit={(e) => {
+          e.preventDefault()
+          setValue("")
+        }}
+        className="border border-slate-200 dark:border-zinc-800 rounded-xl bg-slate-50/70 dark:bg-zinc-900/30 flex flex-col focus-within:bg-white dark:focus-within:bg-zinc-900 focus-within:border-zinc-300 dark:focus-within:border-zinc-700 focus-within:ring-1 focus-within:ring-zinc-300 dark:focus-within:ring-zinc-700 transition-all overflow-hidden"
+      >
+        {/* Type Area */}
+        <input
+          type="text"
+          placeholder="Send a message to Design System..."
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className="w-full px-4 pt-3.5 pb-2 bg-transparent text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-550 border-none outline-none focus:ring-0 text-xs sm:text-sm"
+        />
+
+        {/* Toolbar & Send Actions */}
+        <div className="flex items-center justify-between px-3 py-1.5 border-t border-slate-200/30 dark:border-zinc-800/20 select-none">
+          <div className="flex items-center gap-0.5">
             <Button
               type="button"
               variant="ghost"
-              size="icon-sm"
-              className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg cursor-pointer transition-colors"
+              size="icon"
+              className="h-7 w-7 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-md cursor-pointer transition-colors"
               title="Attach File"
             >
-              <Paperclip className="w-4.5 h-4.5" />
+              <Paperclip className="w-3.5 h-3.5" />
             </Button>
             <Button
               type="button"
               variant="ghost"
-              size="icon-sm"
-              className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg cursor-pointer transition-colors"
+              size="icon"
+              className="h-7 w-7 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-md cursor-pointer transition-colors"
               title="Insert Emoji"
             >
-              <Smile className="w-4.5 h-4.5" />
+              <Smile className="w-3.5 h-3.5" />
             </Button>
             <Button
               type="button"
               variant="ghost"
-              size="icon-sm"
-              className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg cursor-pointer transition-colors"
+              size="icon"
+              className="h-7 w-7 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-md cursor-pointer transition-colors"
               title="Insert Image"
             >
-              <ImageIcon className="w-4.5 h-4.5" />
+              <ImageIcon className="w-3.5 h-3.5" />
             </Button>
-
-            <div className="w-px h-4 bg-slate-355 dark:bg-zinc-800 mx-1.5" />
-
+            
+            <div className="w-px h-3.5 bg-slate-200 dark:bg-zinc-800 mx-1.5" />
+            
             <Button
               type="button"
               variant="ghost"
-              size="icon-xs"
-              className="text-zinc-500 hover:text-zinc-705 rounded transition-colors cursor-pointer"
+              size="icon"
+              className="h-6 w-6 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 rounded transition-colors cursor-pointer"
               title="Bold"
             >
-              <Bold className="w-4 h-4" />
+              <Bold className="w-3 h-3" />
             </Button>
             <Button
               type="button"
               variant="ghost"
-              size="icon-xs"
-              className="text-zinc-500 hover:text-zinc-750 rounded transition-colors cursor-pointer"
+              size="icon"
+              className="h-6 w-6 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 rounded transition-colors cursor-pointer"
               title="Italic"
             >
-              <Italic className="w-4 h-4" />
+              <Italic className="w-3 h-3" />
             </Button>
             <Button
               type="button"
               variant="ghost"
-              size="icon-xs"
-              className="text-zinc-500 hover:text-zinc-750 rounded transition-colors cursor-pointer"
+              size="icon"
+              className="h-6 w-6 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 rounded transition-colors cursor-pointer"
               title="Underline"
             >
-              <Underline className="w-4 h-4" />
+              <Underline className="w-3 h-3" />
             </Button>
           </div>
-        </div>
 
-        {/* Input Text Box */}
-        <div className="flex gap-3 items-end">
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              placeholder="Type your message here..."
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="w-full pr-12 pl-4 py-3 bg-slate-100 dark:bg-zinc-800/80 text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-500 rounded-xl border border-transparent focus:bg-white dark:focus:bg-zinc-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-sm h-11"
-            />
-
-            {/* Embedded Send Button */}
-            <button
-              type="submit"
-              disabled={!value.trim()}
-              className={`absolute right-2.5 bottom-2 p-1.5 rounded-lg transition-all ${value.trim()
-                  ? "bg-indigo-600 text-white hover:bg-indigo-550 shadow-md cursor-pointer"
-                  : "text-slate-350 dark:text-zinc-650 cursor-not-allowed"
-                }`}
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
+          <Button
+            type="submit"
+            disabled={!value.trim()}
+            className={`h-7 px-3.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              value.trim()
+                ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+                : "bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500 cursor-not-allowed"
+            }`}
+          >
+            <Send className="w-3 h-3 mr-1.5 inline" />
+            Send
+          </Button>
         </div>
       </form>
     </footer>
