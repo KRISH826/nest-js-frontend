@@ -12,14 +12,8 @@ export const config = {
     ],
 }
 
-/**
- * The proxy function executes on the server before requests are completed.
- * It handles route protection by checking for the presence of authentication cookies.
- */
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
-
-    // Ignore requests for static files/assets
     if (PUBLIC_FILE_PATTERN.test(pathname)) {
         return NextResponse.next()
     }
@@ -32,18 +26,14 @@ export function proxy(request: NextRequest) {
 
     const isAuthRoute = AUTH_ROUTES.some(route => pathname.startsWith(route))
     const isProtectedRoute = pathname === '/' || PROTECTED_ROUTES.some(route => pathname.startsWith(route))
-
-    // 3. Unauthenticated user trying to access a protected page
     if (isProtectedRoute && !isAuthenticated) {
         const loginUrl = new URL('/login', request.url)
-        // Save the original path as a callbackUrl so we can redirect back after successful login
         loginUrl.searchParams.set('callbackUrl', pathname)
         return NextResponse.redirect(loginUrl)
     }
 
     // 4. Authenticated user trying to access login/register/otp pages
     if (isAuthRoute && isAuthenticated) {
-        // Redirect them to the main application page
         return NextResponse.redirect(new URL('/chat-list', request.url))
     }
 
