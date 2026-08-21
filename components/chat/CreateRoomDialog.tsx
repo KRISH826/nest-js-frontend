@@ -35,7 +35,7 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
-      <DialogContent 
+      <DialogContent
         className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 backdrop-blur-lg max-w-md rounded-2xl p-6 shadow-2xl text-slate-800 dark:text-zinc-100"
         onPointerDownOutside={(e) => e.preventDefault()}
       >
@@ -59,7 +59,7 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
               placeholder="e.g. marketing-dev"
               value={newRoomName}
               onChange={(e) => setNewRoomName(e.target.value)}
-              className="bg-slate-50 dark:bg-zinc-950/40 border-slate-200 dark:border-zinc-800 focus-visible:ring-indigo-500 h-10"
+              className="bg-slate-50 dark:bg-zinc-950/40 border-slate-200 dark:border-zinc-800 focus-visible:ring-0 transition-all duration-300 h-10"
               required
             />
           </div>
@@ -74,7 +74,7 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
               placeholder="What's this channel about?"
               value={newRoomDesc}
               onChange={(e) => setNewRoomDesc(e.target.value)}
-              className="w-full p-3 bg-slate-50 dark:bg-zinc-950/40 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none rounded-lg text-sm transition-all resize-none text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-500"
+              className="w-full p-3 bg-slate-50 dark:bg-zinc-950/40 border border-slate-200 dark:border-zinc-800 focus:border-indigo-500 focus:ring-0 focus:ring-indigo-500 outline-none rounded-lg text-sm transition-all resize-none text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-500"
             />
           </div>
 
@@ -83,15 +83,14 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
             <Label className="text-xs font-bold text-slate-700 dark:text-zinc-350 block">
               Privacy
             </Label>
-            
+
             {/* Public Option Card */}
-            <div 
+            <div
               onClick={() => setPrivacy("public")}
-              className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                privacy === "public" 
-                  ? "border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/5" 
-                  : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-850"
-              }`}
+              className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${privacy === "public"
+                ? "border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/5"
+                : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-850"
+                }`}
             >
               <div className="p-1 bg-slate-100 dark:bg-zinc-805 text-slate-650 dark:text-zinc-400 rounded-lg flex-shrink-0 mt-0.5">
                 <Globe className="w-4 h-4" />
@@ -103,13 +102,12 @@ export function CreateRoomDialog({ isOpen, onClose }: CreateRoomDialogProps) {
             </div>
 
             {/* Private Option Card */}
-            <div 
+            <div
               onClick={() => setPrivacy("private")}
-              className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                privacy === "private" 
-                  ? "border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/5" 
-                  : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-850"
-              }`}
+              className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${privacy === "private"
+                ? "border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/5"
+                : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-850"
+                }`}
             >
               <div className="p-1 bg-slate-100 dark:bg-zinc-805 text-slate-650 dark:text-zinc-400 rounded-lg flex-shrink-0 mt-0.5">
                 <Lock className="w-4 h-4" />
