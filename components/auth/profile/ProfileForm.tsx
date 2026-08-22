@@ -84,16 +84,15 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
         setErrorMessage('')
 
         try {
-            const payload: Record<string, unknown> = {
-                fname: data.fname,
-                lname: data.lname,
-                bio: data.bio,
-            }
+            const formData = new FormData()
+            if (data.fname) formData.append('fname', data.fname)
+            if (data.lname) formData.append('lname', data.lname)
+            if (data.bio) formData.append('bio', data.bio)
             if (avatarFile) {
-                payload.avatar = avatarFile
+                formData.append('avatar', avatarFile)
             }
 
-            await updateProfile(payload as Parameters<typeof updateProfile>[0]).unwrap()
+            await updateProfile(formData).unwrap()
             setSuccessMessage('Profile updated successfully!')
             setTimeout(() => setSuccessMessage(''), 3000)
         } catch (err: unknown) {
