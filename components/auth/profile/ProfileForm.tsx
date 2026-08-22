@@ -23,12 +23,14 @@ import { useGetProfileQuery, useUpdateProfileMutation } from "@/lib/api/auth/aut
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { updateProfileSchema, UpdateProfileRequest } from "@/schema/user.schema"
+import { useRouter } from 'next/navigation'
 
 export default function ProfileForm({ className, ...props }: React.ComponentProps<"div">) {
     const { data: profileResponse, isLoading: isLoadingProfile } = useGetProfileQuery()
     const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation()
 
-    const user = profileResponse?.data
+    const user = profileResponse?.data;
+    const router = useRouter()
 
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
@@ -90,6 +92,7 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
                 formData.append('avatar', avatarFile)
             }
             await updateProfile(formData).unwrap()
+            router.push('/');
         } catch (err: unknown) {
             const errorObj = err as { data?: { message?: string } }
             setErrorMessage(errorObj?.data?.message || 'Failed to update profile. Please try again.')
