@@ -1,6 +1,10 @@
 import { SendOtpRequest, SendOtpResponse, UpdateProfileRequest, UserProfileResponse, VerifyOtpRequest, VerifyOtpResponse } from "@/types/user";
 import { baseApi } from "../baseApi";
-import { BaseNextResponse } from "next/dist/server/base-http";
+
+export interface LogoutResponse {
+    message: string;
+    data?: unknown;
+}
 
 export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -26,7 +30,7 @@ export const authApi = baseApi.injectEndpoints({
             }),
             providesTags: ["User"]
         }),
-        updateProfile: builder.mutation<UserProfileResponse, UpdateProfileRequest>({
+        updateProfile: builder.mutation<UserProfileResponse, FormData | UpdateProfileRequest>({
             query: (data) => ({
                 url: '/auth/profile',
                 method: 'PUT',
@@ -34,12 +38,20 @@ export const authApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["User"]
         }),
-        logout: builder.mutation<BaseNextResponse, void>({
+        logout: builder.mutation<LogoutResponse, void>({
             query: () => ({
                 url: '/auth/logout',
                 method: 'POST',
             }),
-            invalidatesTags: ["Auth", "User"]
+            invalidatesTags: ["Auth", "User"],
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(baseApi.util.resetApiState())
+                } catch (error) {
+                    console.log(error)
+                }
+            }
         })
     })
 })

@@ -56,6 +56,7 @@ export const userProfileResponseSchema = z.object({
 export const updateProfileSchema = z.object({
     fname: z.string().trim().min(1, "First name cannot be empty").optional(),
     lname: z.string().trim().min(1, "Last name cannot be empty").optional(),
+    bio: z.string().trim().min(1, "Bio cannot be empty").optional(),
     avatar: (typeof File !== "undefined" ? z.instanceof(File) : z.any()).optional(),
 })
 

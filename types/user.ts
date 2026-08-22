@@ -46,5 +46,6 @@ export interface UserProfileResponse {
 export interface UpdateProfileRequest {
     fname?: string;
     lname?: string;
+    bio?: string;
     avatar?: File;
 }
