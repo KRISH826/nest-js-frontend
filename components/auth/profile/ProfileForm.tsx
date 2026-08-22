@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Camera, Loader2, CheckCircle2, Upload } from "lucide-react"
+import { Camera, Loader2, Upload } from "lucide-react"
 import { useGetProfileQuery, useUpdateProfileMutation } from "@/lib/api/auth/authApi"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -32,7 +32,6 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
 
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
-    const [successMessage, setSuccessMessage] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
 
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -80,7 +79,6 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
     }
 
     const onSubmit = async (data: UpdateProfileRequest) => {
-        setSuccessMessage('')
         setErrorMessage('')
 
         try {
@@ -91,10 +89,7 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
             if (avatarFile) {
                 formData.append('avatar', avatarFile)
             }
-
             await updateProfile(formData).unwrap()
-            setSuccessMessage('Profile updated successfully!')
-            setTimeout(() => setSuccessMessage(''), 3000)
         } catch (err: unknown) {
             const errorObj = err as { data?: { message?: string } }
             setErrorMessage(errorObj?.data?.message || 'Failed to update profile. Please try again.')
@@ -203,13 +198,6 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
                             </Field>
 
                             {/* Feedback Messages */}
-                            {successMessage && (
-                                <div className="p-3 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-xs flex items-center gap-2">
-                                    <CheckCircle2 className="w-4 h-4 shrink-0" />
-                                    <span>{successMessage}</span>
-                                </div>
-                            )}
-
                             {errorMessage && (
                                 <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-xs">
                                     {errorMessage}

@@ -1,45 +1,51 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+// src/middleware.ts (or src/proxy.ts)
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-// 1. Define paths that do not require session validation
-const PUBLIC_FILE_PATTERN = /\.(.*)$/ // e.g. favicon.ico, images, fonts
-const AUTH_ROUTES = ['/login', '/register', '/otp']
-const PROTECTED_ROUTES = ['/chat-list', '/profile'] // Add other protected routes here
+const AUTH_ROUTES = ['/login', '/register', '/otp'];
+const PROTECTED_ROUTES = ['/', '/profile'];
 
 export const config = {
     matcher: [
+        /*
+         * Match all request paths except:
+         * - api routes (/api/*)
+         * - static files (_next/static, _next/image)
+         * - metadata/favicon files (favicon.ico, sitemap.xml, robots.txt)
+         */
         '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
     ],
-}
+};
 
-export function proxy(request: NextRequest) {
-    const { pathname } = request.nextUrl
-    if (PUBLIC_FILE_PATTERN.test(pathname)) {
-        return NextResponse.next()
-    }
+export default function proxy(request: NextRequest) {
+    const { pathname, search } = request.nextUrl;
 
-    const token = request.cookies.get('token')?.value ||
-        request.cookies.get('session')?.value ||
-        request.cookies.get('accessToken')?.value ||
-        request.cookies.get('access_token')?.value
+    // Check presence of either access_token or refresh_token
+    const accessToken = request.cookies.get('access_token')?.value;
+    const refreshToken = request.cookies.get('refresh_token')?.value;
+    const isAuthenticated = Boolean(accessToken || refreshToken);
 
-    const isAuthenticated = !!token
+    const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
+    const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 
-    const isExactRoot = pathname === '/'
-    const isAuthRoute = isExactRoot || AUTH_ROUTES.some(route => pathname.startsWith(route))
-    const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route))
-
+    // 1. Unauthenticated user accessing a protected route -> Redirect to /login
     if (isProtectedRoute && !isAuthenticated) {
-        const loginUrl = new URL('/login', request.url)
-        loginUrl.searchParams.set('callbackUrl', pathname)
-        return NextResponse.redirect(loginUrl)
+        const loginUrl = new URL('/login', request.url);
+        const callbackUrl = pathname + search;
+
+        loginUrl.searchParams.set('callbackUrl', callbackUrl);
+        return NextResponse.redirect(loginUrl);
     }
 
-    // 4. Authenticated user trying to access login/register/otp pages or root
+    // 2. Authenticated user accessing auth routes (/login, /register, etc.) -> Redirect to /chat-list
     if (isAuthRoute && isAuthenticated) {
-        return NextResponse.redirect(new URL('/chat-list', request.url))
+        return NextResponse.redirect(new URL('/', request.url));
     }
 
-    return NextResponse.next()
-}
+    // 3. Authenticated user accessing root ('/') -> Redirect to /chat-list
+    if (pathname === '/' && isAuthenticated) {
+        return NextResponse.redirect(new URL('/', request.url));
+    }
 
+    return NextResponse.next();
+}
