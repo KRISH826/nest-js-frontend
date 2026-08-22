@@ -5,10 +5,8 @@ import { ChatSidebar } from "./ChatSidebar"
 import { ChatHeader } from "./ChatHeader"
 import { MessageList } from "./MessageList"
 import { ChatInput } from "./ChatInput"
-import { NamePromptDialog } from "./NamePromptDialog"
 
 export default function ChatPage() {
-  const [isNamePromptOpen, setIsNamePromptOpen] = useState(true)
   const [activeView, setActiveView] = useState<"sidebar" | "chat">("sidebar")
 
   return (
@@ -29,12 +27,6 @@ export default function ChatPage() {
         <MessageList />
         <ChatInput />
       </div>
-
-      {/* 3. Name Prompt Dialog (Opens on load) */}
-      <NamePromptDialog 
-        isOpen={isNamePromptOpen} 
-        onNameSubmit={() => setIsNamePromptOpen(false)} 
-      />
     </div>
   )
 }

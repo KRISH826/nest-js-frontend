@@ -19,7 +19,12 @@ interface ChatDialogueProps {
     onClose: () => void
 }
 
-const ChatDialogue = ({ isOpen, onClose }: ChatDialogueProps) => {
+export function ChatDialogue({ isOpen, onClose }: ChatDialogueProps) {
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+        onClose()
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
             <DialogContent className="sm:max-w-120.25 max-w-full border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 backdrop-blur-lg rounded-2xl p-6 shadow-2xl">
@@ -30,7 +35,7 @@ const ChatDialogue = ({ isOpen, onClose }: ChatDialogueProps) => {
                     </DialogDescription>
                 </DialogHeader>
 
-                <form className="space-y-4 py-2">
+                <form onSubmit={handleSubmit} className="space-y-4 py-2">
                     <div className="space-y-2">
                         <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Room Name</Label>
                         <Input
@@ -55,10 +60,18 @@ const ChatDialogue = ({ isOpen, onClose }: ChatDialogueProps) => {
                             min={1} />
                     </div>
 
-                    <DialogFooter className="pt-2">
+                    <DialogFooter className="pt-2 flex justify-end gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onClose}
+                            className="cursor-pointer"
+                        >
+                            Cancel
+                        </Button>
                         <Button
                             type="submit"
-                            className="w-ful dark:bg-indigo-50 dark:text-indigo-950 dark:hover:bg-indigo-100 font-semibold h-11 cursor-pointer"
+                            className="dark:bg-indigo-50 dark:text-indigo-950 dark:hover:bg-indigo-100 font-semibold h-11 cursor-pointer"
                         >
                             Create Chat Room
                         </Button>

@@ -4,7 +4,7 @@ import * as React from "react"
 import { useState } from "react"
 import { ChatSidebarHeader } from "./ChatSidebarHeader"
 import { ChatSidebarChatList } from "./ChatSidebarChatList"
-import { CreateRoomDialog } from "./CreateRoomDialog"
+import { ChatDialogue } from "./ChatDialogue"
 
 interface ChatSidebarProps {
   onSelectChat: () => void
@@ -94,7 +94,7 @@ export function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
       />
 
       {/* 3. Create Room Modal Dialog */}
-      <CreateRoomDialog
+      <ChatDialogue
         isOpen={isCreateRoomOpen}
         onClose={() => setIsCreateRoomOpen(false)}
       />
