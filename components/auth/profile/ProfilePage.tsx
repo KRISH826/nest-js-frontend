@@ -1,9 +1,29 @@
+"use client"
+
 import React from 'react'
+import { GalleryVerticalEnd } from 'lucide-react'
+import ProfileForm from './ProfileForm'
 
 const ProfilePage = () => {
     return (
-        <div>Profile</div>
+        <div className="relative flex min-h-svh flex-col items-center justify-center gap-6 overflow-hidden bg-slate-50 dark:bg-slate-950 p-6 md:p-10">
+            {/* Light Mode Ambient Blurred Round Lighting Effects */}
+            <div className="absolute -top-24 -left-24 h-100 w-100 rounded-full bg-sky-300/50 dark:bg-sky-900/30 blur-3xl" />
+            <div className="absolute -bottom-24 -right-24 h-100 w-100 rounded-full bg-purple-300/50 dark:bg-purple-900/30 blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-87.5 w-87.5 rounded-full bg-indigo-200/50 dark:bg-indigo-900/20 blur-3xl pointer-events-none" />
+
+            <div className="relative z-10 flex w-full max-w-sm sm:max-w-md flex-col gap-6">
+                <a href="/chat-list" className="flex items-center gap-2 self-center font-medium text-slate-900 dark:text-slate-100">
+                    <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-md">
+                        <GalleryVerticalEnd className="size-4" />
+                    </div>
+                    Acme Inc.
+                </a>
+                <ProfileForm />
+            </div>
+        </div>
     )
 }
 
 export default ProfilePage
+
