@@ -1,3 +1,5 @@
+"use client"
+
 import { cn } from "@/lib/tailwind/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,12 +21,40 @@ import {
     InputOTPSlot,
 } from "@/components/ui/input-otp"
 
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Loader2 } from "lucide-react"
+import { useVerifyOtpMutation } from "@/lib/api/auth/authApi"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { verifyOtpSchema, VerifyOtpRequest } from "@/schema/user.schema"
 
 export function OtpForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
+    const [verifyOtp, { isLoading: isLoadingVerifyOtp }] = useVerifyOtpMutation();
+
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: { errors },
+    } = useForm<VerifyOtpRequest>({
+        resolver: zodResolver(verifyOtpSchema),
+        defaultValues: {
+            email: "",
+            otp: "",
+        },
+        mode: "onBlur",
+    })
+
+    const onSubmit = async (data: VerifyOtpRequest) => {
+        try {
+            await verifyOtp(data).unwrap();
+        } catch (error) {
+            console.error("Failed to verify OTP:", error);
+        }
+    }
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card>
@@ -35,25 +65,44 @@ export function OtpForm({
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="otp" className="sr-only">One-Time Password</FieldLabel>
                                 <div className="flex justify-center w-full">
-                                    <InputOTP maxLength={6} id="otp">
-                                        <InputOTPGroup className="gap-2">
-                                            <InputOTPSlot index={0} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                            <InputOTPSlot index={1} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                            <InputOTPSlot index={2} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                            <InputOTPSlot index={3} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                            <InputOTPSlot index={4} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                            <InputOTPSlot index={5} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                        </InputOTPGroup>
-                                    </InputOTP>
+                                    <Controller
+                                        control={control}
+                                        name="otp"
+                                        render={({ field }) => (
+                                            <InputOTP maxLength={6} id="otp" value={field.value} onChange={field.onChange}>
+                                                <InputOTPGroup className="gap-2">
+                                                    <InputOTPSlot index={0} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={1} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={2} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={3} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={4} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={5} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                </InputOTPGroup>
+                                            </InputOTP>
+                                        )}
+                                    />
                                 </div>
+                                {errors.otp && (
+                                    <FieldDescription className="text-center text-red-500">
+                                        {errors.otp.message}
+                                    </FieldDescription>
+                                )}
                             </Field>
                             <Field>
-                                <Button type="submit" className="w-full">Verify Account</Button>
+                                <Button type="submit" className="w-full" disabled={isLoadingVerifyOtp}>
+                                    {isLoadingVerifyOtp ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifying...
+                                        </>
+                                    ) : (
+                                        "Verify Account"
+                                    )}
+                                </Button>
                                 <Button variant="outline" type="button" asChild className="w-full">
                                     <a href="/login" className="flex items-center justify-center gap-2">
                                         <ArrowLeft className="size-4" /> Back to Login Account

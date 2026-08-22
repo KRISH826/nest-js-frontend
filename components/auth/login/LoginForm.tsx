@@ -22,6 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { sendOtpSchema, SendOtpRequest } from "@/schema/user.schema"
 import { useSendOtpMutation } from "@/lib/api/auth/authApi"
 import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation";
 
 export function LoginForm({
     className,
@@ -36,13 +37,14 @@ export function LoginForm({
     })
 
     const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpMutation();
+    const router = useRouter();
 
     const onSubmit = async (data: SendOtpRequest) => {
         try {
-            const response = await sendOtp(data).unwrap();
-            console.log(response);
+            await sendOtp(data).unwrap();
+            router.push("/otp");
         } catch (error) {
-            console.log(error);
+            console.error("Failed to send OTP:", error);
         }
     }
 
