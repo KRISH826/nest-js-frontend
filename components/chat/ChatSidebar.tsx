@@ -6,12 +6,15 @@ import { ChatSidebarHeader } from "./ChatSidebarHeader"
 import { ChatSidebarChatList } from "./ChatSidebarChatList"
 import { CreateRoomDialog } from "./CreateRoomDialog"
 
-export function ChatSidebar() {
+interface ChatSidebarProps {
+  onSelectChat: () => void
+}
+
+export function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeFilter, setActiveFilter] = useState<"all" | "unread" | "groups">("all")
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false)
 
-  // Static mock rooms data for Skype/Teams list
   const rooms = [
     {
       id: "design-sync",
@@ -64,7 +67,7 @@ export function ChatSidebar() {
   const filteredRooms = rooms.filter((room) => {
     const matchesSearch = room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       room.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
-    
+
     if (!matchesSearch) return false
     if (activeFilter === "unread") return room.unreadCount > 0
     if (activeFilter === "groups") return room.type === "channel"
@@ -72,8 +75,8 @@ export function ChatSidebar() {
   })
 
   return (
-    <div className="w-full sm:w-[30%] h-full bg-zinc-50 dark:bg-zinc-900/60 border-r border-slate-200/50 dark:border-zinc-800/80 flex-shrink-0 flex flex-col select-none relative transition-all duration-300">
-      
+    <div className="w-full h-full bg-zinc-50 dark:bg-zinc-900/60 border-r border-slate-200/50 dark:border-zinc-800/80 flex flex-col select-none relative transition-all duration-300">
+
       {/* 1. Sidebar Header (Title, Search, Filter Navigation Tabs) */}
       <ChatSidebarHeader
         roomsCount={rooms.length}
@@ -85,7 +88,10 @@ export function ChatSidebar() {
       />
 
       {/* 2. Room/Thread Message List */}
-      <ChatSidebarChatList filteredRooms={filteredRooms} />
+      <ChatSidebarChatList
+        filteredRooms={filteredRooms}
+        onSelectChat={onSelectChat}
+      />
 
       {/* 3. Create Room Modal Dialog */}
       <CreateRoomDialog
