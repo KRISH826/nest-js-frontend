@@ -26,7 +26,7 @@ import { useVerifyOtpMutation } from "@/lib/api/auth/authApi"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { verifyOtpSchema, VerifyOtpRequest } from "@/schema/user.schema"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 export function OtpForm({
     className,
@@ -35,9 +35,9 @@ export function OtpForm({
     const [verifyOtp, { isLoading: isLoadingVerifyOtp }] = useVerifyOtpMutation();
     const searchParams = useSearchParams()
     const email = searchParams.get("email") || "";
+    const router = useRouter();
 
     const {
-        register,
         handleSubmit,
         control,
         formState: { errors },
@@ -52,7 +52,12 @@ export function OtpForm({
 
     const onSubmit = async (data: VerifyOtpRequest) => {
         try {
-            await verifyOtp(data).unwrap();
+            const response = await verifyOtp(data).unwrap();
+            if (response.data.isProfileComplete === false) {
+                router.push("/profile");
+            } else {
+                router.push("/");
+            }
         } catch (error) {
             console.error("Failed to verify OTP:", error);
         }
