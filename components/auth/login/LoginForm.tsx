@@ -42,7 +42,7 @@ export function LoginForm({
     const onSubmit = async (data: SendOtpRequest) => {
         try {
             await sendOtp(data).unwrap();
-            router.push("/otp");
+            router.push(`/otp?email=${encodeURIComponent(data.email)}`);
         } catch (error) {
             console.error("Failed to send OTP:", error);
         }

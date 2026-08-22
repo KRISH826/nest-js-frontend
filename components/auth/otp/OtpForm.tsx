@@ -26,12 +26,15 @@ import { useVerifyOtpMutation } from "@/lib/api/auth/authApi"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { verifyOtpSchema, VerifyOtpRequest } from "@/schema/user.schema"
+import { useSearchParams } from "next/navigation"
 
 export function OtpForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
     const [verifyOtp, { isLoading: isLoadingVerifyOtp }] = useVerifyOtpMutation();
+    const searchParams = useSearchParams()
+    const email = searchParams.get("email") || "";
 
     const {
         register,
@@ -41,7 +44,7 @@ export function OtpForm({
     } = useForm<VerifyOtpRequest>({
         resolver: zodResolver(verifyOtpSchema),
         defaultValues: {
-            email: "",
+            email,
             otp: "",
         },
         mode: "onBlur",
@@ -76,12 +79,12 @@ export function OtpForm({
                                         render={({ field }) => (
                                             <InputOTP maxLength={6} id="otp" value={field.value} onChange={field.onChange}>
                                                 <InputOTPGroup className="gap-2">
-                                                    <InputOTPSlot index={0} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                                    <InputOTPSlot index={1} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                                    <InputOTPSlot index={2} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                                    <InputOTPSlot index={3} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                                    <InputOTPSlot index={4} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
-                                                    <InputOTPSlot index={5} className="w-10 h-12 sm:w-12 sm:h-14 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={0} className="w-10 h-10 sm:w-12 sm:h-12 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={1} className="w-10 h-10 sm:w-12 sm:h-12 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={2} className="w-10 h-10 sm:w-12 sm:h-12 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={3} className="w-10 h-10 sm:w-12 sm:h-12 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={4} className="w-10 h-10 sm:w-12 sm:h-12 text-base sm:text-lg border rounded-md shadow-sm" />
+                                                    <InputOTPSlot index={5} className="w-10 h-10 sm:w-12 sm:h-12 text-base sm:text-lg border rounded-md shadow-sm" />
                                                 </InputOTPGroup>
                                             </InputOTP>
                                         )}
