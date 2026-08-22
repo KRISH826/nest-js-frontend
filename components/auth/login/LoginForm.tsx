@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/tailwind/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,11 +17,38 @@ import {
     FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { sendOtpSchema, SendOtpRequest } from "@/schema/user.schema"
+import { useSendOtpMutation } from "@/lib/api/auth/authApi"
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation";
 
 export function LoginForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SendOtpRequest>({
+        resolver: zodResolver(sendOtpSchema),
+        defaultValues: {
+            email: "",
+        },
+        mode: "onBlur",
+    })
+
+    const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpMutation();
+    const router = useRouter();
+
+    const onSubmit = async (data: SendOtpRequest) => {
+        try {
+            await sendOtp(data).unwrap();
+            router.push(`/otp?email=${encodeURIComponent(data.email)}`);
+        } catch (error) {
+            console.error("Failed to send OTP:", error);
+        }
+    }
+
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card>
@@ -30,7 +59,7 @@ export function LoginForm({
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <FieldGroup>
                             <Field>
                                 <Button variant="outline" type="button">
@@ -62,10 +91,25 @@ export function LoginForm({
                                     type="email"
                                     placeholder="m@example.com"
                                     required
+                                    {...register("email")}
                                 />
+                                {errors.email && (
+                                    <p className="text-sm font-medium text-destructive">
+                                        {errors.email.message}
+                                    </p>
+                                )}
                             </Field>
                             <Field>
-                                <Button type="submit">Login</Button>
+                                <Button type="submit" disabled={isSendingOtp || isSubmitting}>
+                                    {isSendingOtp || isSubmitting ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Sending OTP...
+                                        </>
+                                    ) : (
+                                        "Login"
+                                    )}
+                                </Button>
                                 <FieldDescription className="text-center">
                                     Don&apos;t have an account? <a href="/register">Sign up</a>
                                 </FieldDescription>
