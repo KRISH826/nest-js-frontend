@@ -3,13 +3,13 @@
 
 import * as React from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { SearchCode } from "lucide-react"
+import { SearchCode, Loader2 } from "lucide-react"
 
-interface Room {
+export interface Room {
   id: string
   name: string
   type: string
-  avatar: string | string[]
+  avatar?: string | string[]
   lastMessage: string
   timestamp: string
   unreadCount: number
@@ -18,29 +18,22 @@ interface Room {
 
 interface ChatSidebarChatListProps {
   filteredRooms: Room[]
+  isFetching?: boolean
   onSelectChat: () => void
 }
 
-export function ChatSidebarChatList({ filteredRooms, onSelectChat }: ChatSidebarChatListProps) {
-  const isSelected = (roomId: string) => roomId === "design-sync"
+export function ChatSidebarChatList({ filteredRooms, isFetching, onSelectChat }: ChatSidebarChatListProps) {
+  const [selectedRoomId, setSelectedRoomId] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    if (filteredRooms.length > 0 && (!selectedRoomId || !filteredRooms.some(r => r.id === selectedRoomId))) {
+      setSelectedRoomId(filteredRooms[0].id)
+    }
+  }, [filteredRooms, selectedRoomId])
 
   const renderRoomAvatar = (room: Room) => {
-    if (room.type === "direct") {
-      return (
-        <div className="relative shrink-0">
-          <Avatar className="h-9 w-9 rounded-xl border border-zinc-150 dark:border-zinc-800">
-            <AvatarImage src={room.avatar as string} alt={room.name} className="object-cover" />
-            <AvatarFallback className="bg-indigo-650 text-white font-bold text-[10px]">
-              {room.name.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border border-white dark:border-zinc-900 ${room.status === "online" ? "bg-emerald-500" :
-            room.status === "away" ? "bg-amber-500" : "bg-zinc-400"
-            }`} />
-        </div>
-      )
-    } else {
-      const avatars = room.avatar as string[]
+    if (Array.isArray(room.avatar)) {
+      const avatars = room.avatar
       return (
         <div className="relative w-9 h-9 shrink-0">
           <img src={avatars[0]} className="absolute top-0 left-0 w-6 h-6 rounded-lg object-cover border border-white dark:border-zinc-900" alt="Avatar 1" />
@@ -48,18 +41,45 @@ export function ChatSidebarChatList({ filteredRooms, onSelectChat }: ChatSidebar
         </div>
       )
     }
+
+    const avatarUrl = typeof room.avatar === "string" ? room.avatar : undefined
+    const initials = room.name ? room.name.trim().substring(0, 2).toUpperCase() : "CR"
+
+    return (
+      <div className="relative shrink-0">
+        <Avatar className="h-9 w-9 rounded-xl border border-zinc-150 dark:border-zinc-800">
+          {avatarUrl ? (
+            <AvatarImage src={avatarUrl} alt={room.name} className="object-cover" />
+          ) : null}
+          <AvatarFallback className="bg-indigo-650 text-white font-bold text-[10px]">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+        <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border border-white dark:border-zinc-900 ${room.status === "online" ? "bg-emerald-500" :
+          room.status === "away" ? "bg-amber-500" : "bg-zinc-400"
+          }`} />
+      </div>
+    )
   }
 
   return (
     <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-0.5 scrollbar-thin">
-      {filteredRooms.length > 0 ? (
+      {isFetching && filteredRooms.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <Loader2 className="w-6 h-6 text-indigo-500 animate-spin mb-2" />
+          <p className="text-xs font-semibold text-slate-400 dark:text-zinc-500">Loading chat rooms...</p>
+        </div>
+      ) : filteredRooms.length > 0 ? (
         filteredRooms.map((room) => {
-          const selected = isSelected(room.id)
+          const selected = room.id === selectedRoomId
 
           return (
             <div
               key={room.id}
-              onClick={onSelectChat}
+              onClick={() => {
+                setSelectedRoomId(room.id)
+                onSelectChat()
+              }}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all ${selected
                 ? "bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/30 text-slate-900 dark:text-zinc-100 shadow-[0_2px_6px_rgba(99,102,241,0.06)]"
                 : "hover:bg-slate-200/35 dark:hover:bg-zinc-800/20 text-slate-605 dark:text-zinc-400 border border-transparent"

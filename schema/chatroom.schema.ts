@@ -15,6 +15,7 @@ export const createChatRoomSchema = z.object({
         .number({ message: "Max members must be a number" })
         .min(1, "Must allow at least 1 member")
         .max(50, "Max members limit cannot exceed 50"),
+    avatar: z.any().optional(),
 });
 
 export type CreateChatRoomSchemaType = z.infer<typeof createChatRoomSchema>;
