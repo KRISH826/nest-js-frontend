@@ -13,6 +13,11 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useForm } from 'react-hook-form'
+import { CreateChatRoomSchemaType, createChatRoomSchema } from '@/schema/chatroom.schema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useCreateChatRoomMutation } from '@/lib/api/chat-room/chatRoomApi'
+import { Loader2 } from 'lucide-react'
 
 interface ChatDialogueProps {
     isOpen: boolean
@@ -20,10 +25,25 @@ interface ChatDialogueProps {
 }
 
 export function ChatDialogue({ isOpen, onClose }: ChatDialogueProps) {
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        onClose()
+    const [createChatRoom, { isLoading: isCreating }] = useCreateChatRoomMutation()
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<CreateChatRoomSchemaType>({
+        resolver: zodResolver(createChatRoomSchema),
+        defaultValues: {
+            name: "",
+            description: "",
+            maxMembers: 10
+        }
+    })
+    const onSubmit = async (data: CreateChatRoomSchemaType) => {
+        try {
+            await createChatRoom(data).unwrap()
+            onClose()
+        } catch (error) {
+            console.log(error)
+        }
     }
+
+    const isLoading = isCreating || isSubmitting
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
@@ -35,13 +55,17 @@ export function ChatDialogue({ isOpen, onClose }: ChatDialogueProps) {
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-4 py-2">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2">
                     <div className="space-y-2">
                         <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Room Name</Label>
                         <Input
                             type="text"
                             placeholder="e.g. Design Sync"
-                            required />
+                            {...register("name")}
+                        />
+                        {errors.name && (
+                            <p className="text-xs text-red-500">{errors.name.message}</p>
+                        )}
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Description</Label>
@@ -49,7 +73,11 @@ export function ChatDialogue({ isOpen, onClose }: ChatDialogueProps) {
                             placeholder="What is this room about?"
                             rows={4}
                             className='min-h-20'
+                            {...register("description")}
                         />
+                        {errors.description && (
+                            <p className="text-xs text-red-500">{errors.description.message}</p>
+                        )}
                     </div>
 
                     <div className="space-y-2">
@@ -57,7 +85,12 @@ export function ChatDialogue({ isOpen, onClose }: ChatDialogueProps) {
                         <Input
                             type="number"
                             placeholder="e.g. 10 (optional)"
-                            min={1} />
+                            min={1}
+                            {...register("maxMembers", { valueAsNumber: true })}
+                        />
+                        {errors.maxMembers && (
+                            <p className="text-xs text-red-500">{errors.maxMembers.message}</p>
+                        )}
                     </div>
 
                     <DialogFooter className="pt-2 flex justify-end gap-2">
@@ -70,10 +103,18 @@ export function ChatDialogue({ isOpen, onClose }: ChatDialogueProps) {
                             Cancel
                         </Button>
                         <Button
+                            disabled={isLoading}
                             type="submit"
                             className="dark:bg-indigo-50 dark:text-indigo-950 dark:hover:bg-indigo-100 font-semibold h-11 cursor-pointer"
                         >
-                            Create Chat Room
+                            {isLoading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Creating...
+                                </>
+                            ) : (
+                                'Create Chat Room'
+                            )}
                         </Button>
                     </DialogFooter>
                 </form>

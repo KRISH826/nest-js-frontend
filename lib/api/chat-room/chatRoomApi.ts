@@ -1,4 +1,4 @@
-import { CreateChatRoomResponse, CreateChatRoomRequest, GetChatRoomResponse, UpdateChatRoomRequest } from "@/types/chatroom";
+import { CreateChatRoomResponse, CreateChatRoomRequest, GetChatRoomResponse, GetChatRoomsResponse, UpdateChatRoomRequest } from "@/types/chatroom";
 import { baseApi } from "../baseApi";
 
 export const chatRoomApi = baseApi.injectEndpoints({
@@ -11,7 +11,7 @@ export const chatRoomApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["ChatRoom"]
         }),
-        getChatrooms: builder.query<GetChatRoomResponse, void>({
+        getChatrooms: builder.query<GetChatRoomsResponse, void>({
             query: () => ({
                 url: '/chat-room',
                 method: 'GET',
