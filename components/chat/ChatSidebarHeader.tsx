@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Search, Plus } from "lucide-react"
+import User from "./User"
 
 interface ChatSidebarHeaderProps {
   roomsCount: number
@@ -25,12 +26,15 @@ export function ChatSidebarHeader({
     <div className="px-6 pt-6 pb-4">
       {/* Messages Header */}
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-lg font-bold tracking-tight text-slate-800 dark:text-zinc-100 flex items-center gap-2">
-          Messages
-          <span className="text-[10px] bg-slate-200/70 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 font-medium px-2 py-0.5 rounded-md">
-            {roomsCount}
-          </span>
-        </h1>
+        <div className="flex gap-2.5 items-center">
+          <User />
+          <h1 className="text-lg font-bold tracking-tight text-slate-800 dark:text-zinc-100 flex items-center gap-2">
+            Messages
+            <span className="text-[10px] bg-slate-200/70 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 font-medium px-2 py-0.5 rounded-md">
+              {roomsCount}
+            </span>
+          </h1>
+        </div>
         <Button
           onClick={onPlusClick}
           size="icon"
@@ -59,25 +63,22 @@ export function ChatSidebarHeader({
       <div className="flex items-center gap-4 text-xs font-semibold text-slate-400 dark:text-zinc-500 border-b border-slate-200/40 dark:border-zinc-800/40 pb-2.5">
         <button
           onClick={() => setActiveFilter("all")}
-          className={`cursor-pointer transition-colors hover:text-slate-700 dark:hover:text-zinc-200 ${
-            activeFilter === "all" ? "text-indigo-600 dark:text-indigo-400 font-bold" : ""
-          }`}
+          className={`cursor-pointer transition-colors hover:text-slate-700 dark:hover:text-zinc-200 ${activeFilter === "all" ? "text-indigo-600 dark:text-indigo-400 font-bold" : ""
+            }`}
         >
           All chats
         </button>
         <button
           onClick={() => setActiveFilter("unread")}
-          className={`cursor-pointer transition-colors hover:text-slate-700 dark:hover:text-zinc-200 ${
-            activeFilter === "unread" ? "text-indigo-600 dark:text-indigo-400 font-bold" : ""
-          }`}
+          className={`cursor-pointer transition-colors hover:text-slate-700 dark:hover:text-zinc-200 ${activeFilter === "unread" ? "text-indigo-600 dark:text-indigo-400 font-bold" : ""
+            }`}
         >
           Unread
         </button>
         <button
           onClick={() => setActiveFilter("groups")}
-          className={`cursor-pointer transition-colors hover:text-slate-700 dark:hover:text-zinc-200 ${
-            activeFilter === "groups" ? "text-indigo-600 dark:text-indigo-400 font-bold" : ""
-          }`}
+          className={`cursor-pointer transition-colors hover:text-slate-700 dark:hover:text-zinc-200 ${activeFilter === "groups" ? "text-indigo-600 dark:text-indigo-400 font-bold" : ""
+            }`}
         >
           Groups
         </button>
