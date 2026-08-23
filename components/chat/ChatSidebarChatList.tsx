@@ -27,6 +27,7 @@ export function ChatSidebarChatList({ filteredRooms, isFetching, onSelectChat }:
 
   React.useEffect(() => {
     if (filteredRooms.length > 0 && (!selectedRoomId || !filteredRooms.some(r => r.id === selectedRoomId))) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedRoomId(filteredRooms[0].id)
     }
   }, [filteredRooms, selectedRoomId])

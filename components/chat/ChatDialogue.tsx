@@ -174,14 +174,14 @@ export function ChatDialogue({ isOpen, onClose }: ChatDialogueProps) {
                             type="button"
                             variant="outline"
                             onClick={handleClose}
-                            className="cursor-pointer"
+                            className="cursor-pointer h-10"
                         >
                             Cancel
                         </Button>
                         <Button
                             disabled={isLoading}
                             type="submit"
-                            className="dark:bg-indigo-50 dark:text-indigo-950 dark:hover:bg-indigo-100 font-semibold h-11 cursor-pointer"
+                            className="dark:bg-indigo-50 dark:text-indigo-950 dark:hover:bg-indigo-100 font-semibold h-10 cursor-pointer"
                         >
                             {isLoading ? (
                                 <>
