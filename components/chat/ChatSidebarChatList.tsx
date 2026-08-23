@@ -47,11 +47,11 @@ export function ChatSidebarChatList({ filteredRooms, isFetching, onSelectChat }:
 
     return (
       <div className="relative shrink-0">
-        <Avatar className="h-9 w-9 rounded-xl border border-zinc-150 dark:border-zinc-800">
+        <Avatar className="h-10 w-10 rounded-full p-0 border-none after:hidden overflow-hidden">
           {avatarUrl ? (
-            <AvatarImage src={avatarUrl} alt={room.name} className="object-cover" />
+            <AvatarImage src={avatarUrl} alt={room.name} className="object-cover w-full h-full rounded-full" />
           ) : null}
-          <AvatarFallback className="bg-indigo-650 text-white font-bold text-[10px]">
+          <AvatarFallback className="bg-indigo-600 text-white font-bold text-xs rounded-full">
             {initials}
           </AvatarFallback>
         </Avatar>
