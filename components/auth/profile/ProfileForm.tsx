@@ -18,8 +18,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Camera, Loader2, Upload } from "lucide-react"
-import { useGetProfileQuery, useUpdateProfileMutation } from "@/lib/api/auth/authApi"
+import { Camera, Loader2, Upload, ArrowLeft, LogOut } from "lucide-react"
+import { useGetProfileQuery, useUpdateProfileMutation, useLogoutMutation } from "@/lib/api/auth/authApi"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { updateProfileSchema, UpdateProfileRequest } from "@/schema/user.schema"
@@ -28,9 +28,21 @@ import { useRouter } from 'next/navigation'
 export default function ProfileForm({ className, ...props }: React.ComponentProps<"div">) {
     const { data: profileResponse, isLoading: isLoadingProfile } = useGetProfileQuery()
     const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation()
+    const [logout, { isLoading: isLoggingOut }] = useLogoutMutation()
 
     const user = profileResponse?.data;
     const router = useRouter()
+
+    const isProfileComplete = Boolean(user?.isProfileComplete ?? (user?.fname && user?.lname));
+
+    const handleLogout = async () => {
+        try {
+            await logout().unwrap()
+            router.push('/login')
+        } catch (err) {
+            console.error('Logout error:', err)
+        }
+    }
 
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
@@ -107,8 +119,20 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
 
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <Card>
-                <CardHeader className="text-center">
+            <Card className="relative">
+                <CardHeader className="relative text-center">
+                    {isProfileComplete && (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push('/')}
+                            className="absolute left-4 top-4 h-8 w-8 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer"
+                            title="Go back"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                        </Button>
+                    )}
                     <CardTitle className="text-xl">Your Profile</CardTitle>
                     <CardDescription>
                         Upload your picture and update your personal details
@@ -207,17 +231,52 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
                                 </div>
                             )}
 
-                            {/* Submit Button */}
+                            {/* Action Buttons */}
                             <Field>
-                                <Button type="submit" className="w-full" disabled={isUpdating || isLoadingProfile || isSubmitting}>
-                                    {isUpdating || isSubmitting ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving changes...
-                                        </>
-                                    ) : (
-                                        "Save Profile"
-                                    )}
-                                </Button>
+                                {isProfileComplete ? (
+                                    <div className="flex items-center gap-3 w-full">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={handleLogout}
+                                            disabled={isLoggingOut}
+                                            className="w-1/2 cursor-pointer border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                        >
+                                            {isLoggingOut ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Logging out...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <LogOut className="mr-2 h-4 w-4" /> Logout
+                                                </>
+                                            )}
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            className="w-1/2 cursor-pointer"
+                                            disabled={isUpdating || isLoadingProfile || isSubmitting}
+                                        >
+                                            {isUpdating || isSubmitting ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+                                                </>
+                                            ) : (
+                                                "Save Profile"
+                                            )}
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <Button type="submit" className="w-full" disabled={isUpdating || isLoadingProfile || isSubmitting}>
+                                        {isUpdating || isSubmitting ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving changes...
+                                            </>
+                                        ) : (
+                                            "Save Profile"
+                                        )}
+                                    </Button>
+                                )}
                             </Field>
                         </FieldGroup>
                     </form>

@@ -8,8 +8,10 @@ export interface User {
     email: string;
     fname?: string;
     lname?: string;
+    bio?: string;
     avatar?: UserAvatar;
     provider?: string;
+    isProfileComplete?: boolean;
     createdAt: string;
     updatedAt: string;
 }
