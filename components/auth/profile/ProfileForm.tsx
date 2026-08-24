@@ -119,20 +119,8 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
 
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <Card className="relative">
-                <CardHeader className="relative text-center">
-                    {isProfileComplete && (
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => router.push('/')}
-                            className="absolute left-4 top-4 h-8 w-8 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer"
-                            title="Go back"
-                        >
-                            <ArrowLeft className="w-4 h-4" />
-                        </Button>
-                    )}
+            <Card>
+                <CardHeader className="text-center">
                     <CardTitle className="text-xl">Your Profile</CardTitle>
                     <CardDescription>
                         Upload your picture and update your personal details
