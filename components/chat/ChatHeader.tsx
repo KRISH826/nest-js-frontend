@@ -24,6 +24,7 @@ import {
   ArrowLeft,
   MoreVertical
 } from "lucide-react"
+import JoinRoom from "./JoinRoom"
 
 interface ChatHeaderProps {
   onBack: () => void
@@ -81,6 +82,8 @@ export function ChatHeader({ onBack }: ChatHeaderProps) {
       </div>
 
       <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Join Room Dialog Button */}
+        <JoinRoom />
         {/* Search bar (desktop only) */}
         <div className="relative max-w-[130px] sm:max-w-[160px] hidden sm:block">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />

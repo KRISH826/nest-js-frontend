@@ -39,8 +39,22 @@ export const chatRoomApi = baseApi.injectEndpoints({
                 method: 'DELETE',
             }),
             invalidatesTags: ["ChatRoom"]
+        }),
+        joinChatRoom: builder.mutation<GetChatRoomResponse, string>({
+            query: (id) => ({
+                url: `/chat-room/${id}/join`,
+                method: 'POST',
+            }),
+            invalidatesTags: ["ChatRoom"]
         })
     })
 })
 
-export const { useCreateChatRoomMutation, useGetChatroomsQuery, useGetChatRoomByIdQuery, useUpdateChatRoomByIdMutation, useDeleteChatRoomByIdMutation } = chatRoomApi;
+export const {
+    useCreateChatRoomMutation,
+    useGetChatroomsQuery,
+    useGetChatRoomByIdQuery,
+    useUpdateChatRoomByIdMutation,
+    useDeleteChatRoomByIdMutation,
+    useJoinChatRoomMutation
+} = chatRoomApi;

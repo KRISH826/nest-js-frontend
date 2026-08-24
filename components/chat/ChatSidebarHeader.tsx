@@ -4,6 +4,7 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Search, Plus } from "lucide-react"
 import User from "./User"
+import JoinRoom from "./JoinRoom"
 
 interface ChatSidebarHeaderProps {
   roomsCount: number
@@ -35,14 +36,17 @@ export function ChatSidebarHeader({
             </span>
           </h1>
         </div>
-        <Button
-          onClick={onPlusClick}
-          size="icon"
-          className="h-8 w-8 bg-indigo-600 hover:bg-indigo-650 rounded-sm cursor-pointer text-white transition-colors"
-          title="Create New Room"
-        >
-          <Plus className="w-4 h-4" />
-        </Button>
+        <div className="flex items-center gap-1.5">
+          <JoinRoom />
+          <Button
+            onClick={onPlusClick}
+            size="icon"
+            className="h-8 w-8 bg-indigo-600 hover:bg-indigo-650 rounded-lg cursor-pointer text-white transition-colors"
+            title="Create New Room"
+          >
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Search Input */}
