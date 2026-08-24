@@ -27,6 +27,7 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { verifyOtpSchema, VerifyOtpRequest } from "@/schema/user.schema"
 import { useRouter, useSearchParams } from "next/navigation"
+import { toast } from "sonner"
 
 export function OtpForm({
     className,
@@ -53,13 +54,15 @@ export function OtpForm({
     const onSubmit = async (data: VerifyOtpRequest) => {
         try {
             const response = await verifyOtp(data).unwrap();
+            toast.success(response.message || "Email verified successfully!");
             if (response.data.isProfileComplete === false) {
                 router.push("/profile");
             } else {
                 router.push("/");
             }
-        } catch (error) {
-            console.error("Failed to verify OTP:", error);
+        } catch (error: unknown) {
+            const errorObj = error as { data?: { message?: string } };
+            toast.error(errorObj?.data?.message || "Invalid or expired OTP code.");
         }
     }
 

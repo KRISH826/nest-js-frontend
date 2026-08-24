@@ -5,6 +5,8 @@ import { cn } from "@/lib/tailwind/utils";
 import { SocketProvider } from "@/provider/SocketProvider";
 import StoreProvider from "@/provider/StoreProvider";
 
+import { Toaster } from "@/components/ui/sonner";
+
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 const geistSans = Geist({
@@ -37,6 +39,7 @@ export default function RootLayout({
         <StoreProvider>
           <SocketProvider>
             {children}
+            <Toaster position="top-right" />
           </SocketProvider>
         </StoreProvider>
       </body>

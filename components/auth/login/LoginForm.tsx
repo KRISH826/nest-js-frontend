@@ -23,6 +23,7 @@ import { sendOtpSchema, SendOtpRequest } from "@/schema/user.schema"
 import { useSendOtpMutation } from "@/lib/api/auth/authApi"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function LoginForm({
     className,
@@ -41,10 +42,12 @@ export function LoginForm({
 
     const onSubmit = async (data: SendOtpRequest) => {
         try {
-            await sendOtp(data).unwrap();
+            const res = await sendOtp(data).unwrap();
+            toast.success(res?.message || "OTP sent successfully! Please check your email.");
             router.push(`/otp?email=${encodeURIComponent(data.email)}`);
-        } catch (error) {
-            console.error("Failed to send OTP:", error);
+        } catch (error: unknown) {
+            const errorObj = error as { data?: { message?: string } };
+            toast.error(errorObj?.data?.message || "Failed to send OTP. Please try again.");
         }
     }
 
