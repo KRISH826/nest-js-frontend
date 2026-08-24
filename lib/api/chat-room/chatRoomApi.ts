@@ -1,9 +1,9 @@
-import { CreateChatRoomResponse, CreateChatRoomRequest, GetChatRoomResponse, UpdateChatRoomRequest } from "@/types/chatroom";
+import { CreateChatRoomResponse, CreateChatRoomRequest, GetChatRoomResponse, GetChatRoomsResponse, UpdateChatRoomRequest } from "@/types/chatroom";
 import { baseApi } from "../baseApi";
 
 export const chatRoomApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        createChatRoom: builder.mutation<CreateChatRoomResponse, CreateChatRoomRequest>({
+        createChatRoom: builder.mutation<CreateChatRoomResponse, FormData | CreateChatRoomRequest>({
             query: (data) => ({
                 url: '/chat-room',
                 method: 'POST',
@@ -11,7 +11,7 @@ export const chatRoomApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["ChatRoom"]
         }),
-        getChatrooms: builder.query<GetChatRoomResponse, void>({
+        getChatrooms: builder.query<GetChatRoomsResponse, void>({
             query: () => ({
                 url: '/chat-room',
                 method: 'GET',
@@ -25,7 +25,7 @@ export const chatRoomApi = baseApi.injectEndpoints({
             }),
             providesTags: ["ChatRoom"]
         }),
-        updateChatRoomById: builder.mutation<GetChatRoomResponse, { id: string, data: UpdateChatRoomRequest }>({
+        updateChatRoomById: builder.mutation<GetChatRoomResponse, { id: string, data: FormData | UpdateChatRoomRequest }>({
             query: ({ id, data }) => ({
                 url: `/chat-room/${id}`,
                 method: 'PUT',
