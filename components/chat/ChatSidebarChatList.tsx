@@ -8,7 +8,7 @@ import { SearchCode, Loader2 } from "lucide-react"
 export interface Room {
   id: string
   name: string
-  type: string
+  type?: string
   avatar?: string | string[]
   lastMessage: string
   timestamp: string
@@ -31,9 +31,7 @@ export function ChatSidebarChatList({
   onSelectRoomId,
   onSelectChat
 }: ChatSidebarChatListProps) {
-  const [internalSelectedRoomId, setInternalSelectedRoomId] = React.useState<string | null>(null)
-
-  const selectedRoomId = externalSelectedRoomId ?? internalSelectedRoomId ?? filteredRooms[0]?.id ?? null
+  const selectedRoomId = externalSelectedRoomId ?? filteredRooms[0]?.id ?? null
 
   const renderRoomAvatar = (room: Room) => {
     if (Array.isArray(room.avatar)) {
@@ -81,7 +79,6 @@ export function ChatSidebarChatList({
             <div
               key={room.id}
               onClick={() => {
-                setInternalSelectedRoomId(room.id)
                 if (onSelectRoomId) onSelectRoomId(room.id)
                 onSelectChat()
               }}

@@ -42,9 +42,9 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
   })
   const room = roomResponse?.data
 
-  const roomName = room?.name || "General Workspace"
-  const memberCount = room?.members?.length || 1
-  const initials = roomName.trim().substring(0, 2).toUpperCase()
+  const roomName = room?.name
+  const memberCount = room?.members?.length
+  const initials = roomName ? roomName.trim().substring(0, 2).toUpperCase() : ""
 
   const onThemeToggle = () => {
     const next = theme === "dark" ? "light" : "dark"
@@ -60,7 +60,7 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
   return (
     <header className="px-4 sm:px-6 py-4.5 flex flex-row justify-between items-center border-b border-slate-200/40 dark:border-zinc-800/60 bg-white dark:bg-zinc-950 flex-shrink-0 select-none">
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        
+
         {/* Mobile Back Action Button */}
         <Button
           variant="ghost"
@@ -174,30 +174,30 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 p-1 rounded-xl shadow-lg">
-              <DropdownMenuItem 
-                onClick={() => {}} 
+              <DropdownMenuItem
+                onClick={() => { }}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-705 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer"
               >
                 <Phone className="w-3.5 h-3.5 text-slate-400" />
                 <span>Audio Call</span>
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => {}} 
+              <DropdownMenuItem
+                onClick={() => { }}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-705 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer"
               >
                 <Video className="w-3.5 h-3.5 text-slate-400" />
                 <span>Video Call</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1 border-b border-slate-100 dark:border-zinc-800" />
-              <DropdownMenuItem 
-                onClick={onThemeToggle} 
+              <DropdownMenuItem
+                onClick={onThemeToggle}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-705 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer"
               >
                 {theme === "dark" ? <Sun className="w-3.5 h-3.5 text-slate-400" /> : <Moon className="w-3.5 h-3.5" />}
                 <span>Toggle Theme</span>
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => {}} 
+              <DropdownMenuItem
+                onClick={() => { }}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-rose-500 hover:bg-rose-500/10 cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5 text-rose-450" />

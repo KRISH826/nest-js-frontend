@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useState, useMemo } from "react"
 import { ChatSidebarHeader } from "./ChatSidebarHeader"
-import { ChatSidebarChatList } from "./ChatSidebarChatList"
+import { ChatSidebarChatList, Room } from "./ChatSidebarChatList"
 import { ChatDialogue } from "./ChatDialogue"
 import { useGetChatroomsQuery } from "@/lib/api/chat-room/chatRoomApi"
 
@@ -13,16 +13,6 @@ interface ChatSidebarProps {
   onSelectRoomId?: (id: string) => void
 }
 
-export interface Room {
-  id: string
-  name: string
-  type: string
-  avatar?: string | string[]
-  lastMessage: string
-  timestamp: string
-  unreadCount: number
-  status?: string
-}
 
 function formatTimestamp(dateStr?: string) {
   if (!dateStr) return "Just now"
@@ -48,7 +38,6 @@ export function ChatSidebar({ onSelectChat, selectedRoomId, onSelectRoomId }: Ch
     return chatroomsResponse.data.map((room) => ({
       id: room._id,
       name: room.name,
-      type: "channel",
       avatar: room.avatar?.url || undefined,
       lastMessage: room.description || "Workspace chat room",
       timestamp: formatTimestamp(room.createdAt),
@@ -59,13 +48,14 @@ export function ChatSidebar({ onSelectChat, selectedRoomId, onSelectRoomId }: Ch
 
   const filteredRooms = useMemo(() => {
     return rooms.filter((room) => {
-      const matchesSearch = room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch =
+        room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         room.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
 
-      if (!matchesSearch) return false
-      if (activeFilter === "unread") return room.unreadCount > 0
-      if (activeFilter === "groups") return room.type === "channel"
-      return true
+      if (activeFilter === "unread") {
+        return matchesSearch && room.unreadCount > 0
+      }
+      return matchesSearch
     })
   }, [rooms, searchQuery, activeFilter])
 
