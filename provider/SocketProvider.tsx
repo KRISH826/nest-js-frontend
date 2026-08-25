@@ -1,34 +1,64 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { socket } from "@/lib/socket/ws"
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { socket } from "@/lib/socket/ws";
+import { Chat } from "@/types/chat";
+
+interface SocketContextType {
+    socket: typeof socket;
+    isConnected: boolean;
+}
+
+const SocketContext = createContext<SocketContextType>({
+    socket,
+    isConnected: false,
+});
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
+    const [isConnected, setIsConnected] = useState(socket.connected);
+
     useEffect(() => {
-        socket.on("connect", () => {
-            console.log("Connected:", socket.id)
-        })
-
-        socket.on("roomNotice", (data: { username: string; message: string }) => {
-            console.log(data.message)
-        })
-        socket.on("chatMessage", (data: { username: string; message: string }) => {
-            console.log(data.message)
-        })
-
-        socket.on("disconnect", () => {
-            console.log("Disconnected")
-        })
-
-        socket.connect()
-
-        return () => {
-            socket.off("connect")
-            socket.off("roomNotice")
-            socket.off("disconnect")
-            socket.disconnect()
+        function onConnect() {
+            setIsConnected(true);
+            console.log("[WS Connected]:", socket.id);
         }
-    }, [])
 
-    return <>{children}</>
+        function onDisconnect() {
+            setIsConnected(false);
+            console.log("[WS Disconnected]");
+        }
+
+        function onRoomNotice(data: { user: string; message: string; timestamp: string }) {
+            console.log(`[Room Notice]: ${data.user} - ${data.message}`);
+        }
+
+        function onNewMessage(data: Chat) {
+            console.log("[New Message Received]:", data);
+        }
+
+        // Attach listeners
+        socket.on("connect", onConnect);
+        socket.on("disconnect", onDisconnect);
+        socket.on("roomNotice", onRoomNotice);
+        socket.on("newMessage", onNewMessage); // Correct backend event name
+
+        socket.connect();
+
+        // Clean up every listener on unmount
+        return () => {
+            socket.off("connect", onConnect);
+            socket.off("disconnect", onDisconnect);
+            socket.off("roomNotice", onRoomNotice);
+            socket.off("newMessage", onNewMessage);
+            socket.disconnect();
+        };
+    }, []);
+
+    return (
+        <SocketContext.Provider value={{ socket, isConnected }}>
+            {children}
+        </SocketContext.Provider>
+    );
 }
+
+export const useSocket = () => useContext(SocketContext);
