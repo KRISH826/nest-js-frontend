@@ -9,6 +9,8 @@ import { useGetChatroomsQuery } from "@/lib/api/chat-room/chatRoomApi"
 
 interface ChatSidebarProps {
   onSelectChat: () => void
+  selectedRoomId?: string | null
+  onSelectRoomId?: (id: string) => void
 }
 
 export interface Room {
@@ -34,7 +36,7 @@ function formatTimestamp(dateStr?: string) {
   return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
 }
 
-export function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
+export function ChatSidebar({ onSelectChat, selectedRoomId, onSelectRoomId }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeFilter, setActiveFilter] = useState<"all" | "unread" | "groups">("all")
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false)
@@ -84,6 +86,8 @@ export function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
       <ChatSidebarChatList
         filteredRooms={filteredRooms}
         isFetching={isFetching}
+        selectedRoomId={selectedRoomId}
+        onSelectRoomId={onSelectRoomId}
         onSelectChat={onSelectChat}
       />
 

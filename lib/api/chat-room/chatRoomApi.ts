@@ -18,6 +18,13 @@ export const chatRoomApi = baseApi.injectEndpoints({
             }),
             providesTags: ["ChatRoom"]
         }),
+        getPublicChatRooms: builder.query<GetChatRoomsResponse, void>({
+            query: () => ({
+                url: '/chat-room/public',
+                method: 'GET',
+            }),
+            providesTags: ["ChatRoom"]
+        }),
         getChatRoomById: builder.query<GetChatRoomResponse, string>({
             query: (id) => ({
                 url: `/chat-room/${id}`,
@@ -53,6 +60,7 @@ export const chatRoomApi = baseApi.injectEndpoints({
 export const {
     useCreateChatRoomMutation,
     useGetChatroomsQuery,
+    useGetPublicChatRoomsQuery,
     useGetChatRoomByIdQuery,
     useUpdateChatRoomByIdMutation,
     useDeleteChatRoomByIdMutation,

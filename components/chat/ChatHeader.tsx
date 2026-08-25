@@ -24,15 +24,27 @@ import {
   ArrowLeft,
   MoreVertical
 } from "lucide-react"
+import { useGetChatRoomByIdQuery } from "@/lib/api/chat-room/chatRoomApi"
+import { AvatarImage } from "@/components/ui/avatar"
 import JoinRoom from "./JoinRoom"
 
 interface ChatHeaderProps {
   onBack: () => void
+  selectedRoomId?: string
 }
 
-export function ChatHeader({ onBack }: ChatHeaderProps) {
+export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [theme, setTheme] = useState<"light" | "dark">("dark")
+
+  const { data: roomResponse, isLoading: isLoadingRoom } = useGetChatRoomByIdQuery(selectedRoomId || "", {
+    skip: !selectedRoomId,
+  })
+  const room = roomResponse?.data
+
+  const roomName = room?.name || "General Workspace"
+  const memberCount = room?.members?.length || 1
+  const initials = roomName.trim().substring(0, 2).toUpperCase()
 
   const onThemeToggle = () => {
     const next = theme === "dark" ? "light" : "dark"
@@ -60,23 +72,26 @@ export function ChatHeader({ onBack }: ChatHeaderProps) {
           <ArrowLeft className="w-4.5 h-4.5" />
         </Button>
 
-        <Avatar className="h-9 w-9 rounded-xl border border-zinc-150 dark:border-zinc-800 shrink-0">
+        <Avatar className="h-9 w-9 rounded-xl border border-zinc-150 dark:border-zinc-800 shrink-0 overflow-hidden">
+          {room?.avatar?.url ? (
+            <AvatarImage src={room.avatar.url} alt={roomName} className="object-cover w-full h-full" />
+          ) : null}
           <AvatarFallback className="bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
-            #
+            {initials}
           </AvatarFallback>
         </Avatar>
 
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-1.5">
             <h1 className="font-bold text-slate-800 dark:text-zinc-100 tracking-tight text-sm truncate">
-              Design System & UI Sync
+              {isLoadingRoom ? "Loading..." : roomName}
             </h1>
             <Lock className="w-3 h-3 text-slate-400 dark:text-zinc-550 shrink-0" />
           </div>
 
           <p className="text-[10px] text-slate-450 dark:text-zinc-500 flex items-center gap-1 mt-0.5 leading-none">
             <Users2 className="w-3 h-3 text-slate-400 shrink-0" />
-            <span>8 members</span>
+            <span>{memberCount} {memberCount === 1 ? 'member' : 'members'}</span>
           </p>
         </div>
       </div>
