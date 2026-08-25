@@ -72,7 +72,7 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
           <ArrowLeft className="w-4.5 h-4.5" />
         </Button>
 
-        <Avatar className="h-9 w-9 rounded-xl border border-zinc-150 dark:border-zinc-800 shrink-0 overflow-hidden">
+        <Avatar className="h-9 w-9 rounded-xl shrink-0 overflow-hidden">
           {room?.avatar?.url ? (
             <AvatarImage src={room.avatar.url} alt={roomName} className="object-cover w-full h-full" />
           ) : null}

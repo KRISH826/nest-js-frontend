@@ -46,19 +46,6 @@ export function ChatSidebar({ onSelectChat, selectedRoomId, onSelectRoomId }: Ch
     }))
   }, [chatroomsResponse])
 
-  const filteredRooms = useMemo(() => {
-    return rooms.filter((room) => {
-      const matchesSearch =
-        room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        room.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
-
-      if (activeFilter === "unread") {
-        return matchesSearch && room.unreadCount > 0
-      }
-      return matchesSearch
-    })
-  }, [rooms, searchQuery, activeFilter])
-
   return (
     <div className="w-full h-full bg-zinc-50 dark:bg-zinc-900/60 border-r border-slate-200/50 dark:border-zinc-800/80 flex flex-col select-none relative transition-all duration-300">
 
@@ -74,7 +61,7 @@ export function ChatSidebar({ onSelectChat, selectedRoomId, onSelectRoomId }: Ch
 
       {/* 2. Room/Thread Message List */}
       <ChatSidebarChatList
-        filteredRooms={filteredRooms}
+        filteredRooms={rooms}
         isFetching={isFetching}
         selectedRoomId={selectedRoomId}
         onSelectRoomId={onSelectRoomId}

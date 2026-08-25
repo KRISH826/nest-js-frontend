@@ -31,7 +31,7 @@ export function ChatSidebarChatList({
   onSelectRoomId,
   onSelectChat
 }: ChatSidebarChatListProps) {
-  const selectedRoomId = externalSelectedRoomId ?? filteredRooms[0]?.id ?? null
+  const selectedRoomId = externalSelectedRoomId ?? null
 
   const renderRoomAvatar = (room: Room) => {
     if (Array.isArray(room.avatar)) {
