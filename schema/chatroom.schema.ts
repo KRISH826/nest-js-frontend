@@ -19,3 +19,4 @@ export const createChatRoomSchema = z.object({
 });
 
 export type CreateChatRoomSchemaType = z.infer<typeof createChatRoomSchema>;
+export type UpdateChatRoomSchemaType = z.infer<typeof createChatRoomSchema>;
