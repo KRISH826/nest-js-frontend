@@ -47,7 +47,7 @@ export function MessageList({ roomId, liveMessages }: MessageListProps) {
   }, [allMessages]);
 
   return (
-    <main className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-slate-50 dark:bg-indigo-900/30 scrollbar-thin">
+    <main className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-indigo-50/30 dark:bg-zinc-950/30 scrollbar-thin">
       {allMessages.map((msg) => {
         const senderId = typeof msg.sender === "string" ? msg.sender : msg.sender?._id;
         const isUser = Boolean(currentUserId && senderId === currentUserId);
@@ -86,7 +86,7 @@ export function MessageList({ roomId, liveMessages }: MessageListProps) {
               </div>
 
               <div
-                className={`px-4 py-2.5 rounded-2xl shadow-xs text-xs sm:text-sm wrap-break-word leading-relaxed animate-in zoom-in-95 duration-150 ${isUser
+                className={`px-4 py-2.5 rounded-2xl shadow-xs text-xs sm:text-sm break-words leading-relaxed animate-in zoom-in-95 duration-150 ${isUser
                   ? "bg-indigo-600 text-white rounded-tr-none"
                   : "bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200/40 dark:border-zinc-800/60 rounded-tl-none"
                   }`}

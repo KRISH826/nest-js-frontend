@@ -27,6 +27,7 @@ import {
 import { useGetChatRoomByIdQuery } from "@/lib/api/chat-room/chatRoomApi"
 import { AvatarImage } from "@/components/ui/avatar"
 import JoinRoom from "./JoinRoom"
+import ChatViewandUpdate from "./chatroom/ChatViewandUpdate"
 
 interface ChatHeaderProps {
   onBack: () => void
@@ -36,6 +37,7 @@ interface ChatHeaderProps {
 export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [theme, setTheme] = useState<"light" | "dark">("dark")
+  const [openModal, setOpenModal] = useState<boolean>(false)
 
   const { data: roomResponse, isLoading: isLoadingRoom } = useGetChatRoomByIdQuery(selectedRoomId || "", {
     skip: !selectedRoomId,
@@ -55,6 +57,10 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
     } else {
       root.classList.remove("dark")
     }
+  }
+
+  const OpenDialog = () => {
+    setOpenModal(true)
   }
 
   return (
@@ -83,12 +89,11 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
 
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-1.5">
-            <h1 className="font-bold text-slate-800 dark:text-zinc-100 tracking-tight text-sm truncate">
+            <h1 onClick={OpenDialog} className="font-bold cursor-pointer hover:underline text-slate-800 dark:text-zinc-100 tracking-tight text-sm truncate">
               {isLoadingRoom ? "Loading..." : roomName}
             </h1>
             <Lock className="w-3 h-3 text-slate-400 dark:text-zinc-550 shrink-0" />
           </div>
-
           <p className="text-[10px] text-slate-450 dark:text-zinc-500 flex items-center gap-1 mt-0.5 leading-none">
             <Users2 className="w-3 h-3 text-slate-400 shrink-0" />
             <span>{memberCount} {memberCount === 1 ? 'member' : 'members'}</span>
@@ -99,8 +104,9 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
       <div className="flex items-center gap-1.5 sm:gap-2">
         {/* Join Room Dialog Button */}
         <JoinRoom />
+        <ChatViewandUpdate open={openModal} openChange={setOpenModal} roomId={selectedRoomId} />
         {/* Search bar (desktop only) */}
-        <div className="relative max-w-[130px] sm:max-w-[160px] hidden sm:block">
+        <div className="relative max-w-32.5 sm:max-w-40 hidden sm:block">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
           <input
             type="text"
