@@ -25,7 +25,7 @@ export default function ChatPage() {
         <ChatSidebar
           onSelectChat={() => setActiveView("chat")}
           selectedRoomId={selectedRoomId}
-          onSelectRoomId={(id) => setSelectedRoomId(id)}
+          onSelectRoomId={handleSelectRoom}
         />
       </div>
 

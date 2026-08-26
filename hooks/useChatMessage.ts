@@ -1,6 +1,8 @@
 import { useSocket } from "@/provider/SocketProvider";
 import { Chat, ChatSender } from "@/types/chat";
 import { useCallback, useEffect, useState } from "react";
+import { useAppDispatch } from "@/lib/hooks/hooks";
+import { appendChatMessageToCache } from "@/lib/helpers/appendChatMessage";
 
 export interface NewMessagePayload {
     _id?: string;
@@ -18,6 +20,7 @@ export interface NewMessagePayload {
 export function useChatSocket(roomId?: string | null) {
     const { isConnected, socket } = useSocket();
     const [liveMessage, SetliveMessage] = useState<Chat[]>([]);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (!isConnected || !socket || !roomId) return;
@@ -37,7 +40,12 @@ export function useChatSocket(roomId?: string | null) {
                     createdAt: payload.createdAt || new Date().toISOString(),
                     updatedAt: payload.updatedAt || payload.createdAt || new Date().toISOString(),
                 };
+
+                // 1. Append to local React state
                 SetliveMessage((prev) => [...prev, formattedMessage]);
+
+                // 2. Sync directly into RTK Query cache using chatApi helper
+                appendChatMessageToCache(dispatch, roomId, formattedMessage);
             }
         };
 
@@ -47,7 +55,7 @@ export function useChatSocket(roomId?: string | null) {
             socket.emit("leaveRoom", { roomId });
             socket.off("newMessage", handleMessage);
         };
-    }, [isConnected, roomId, socket]);
+    }, [isConnected, roomId, socket, dispatch]);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
