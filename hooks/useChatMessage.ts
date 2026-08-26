@@ -15,7 +15,7 @@ export interface NewMessagePayload {
     updatedAt?: string;
 }
 
-export function useChatSocket(roomId?: string) {
+export function useChatSocket(roomId?: string | null) {
     const { isConnected, socket } = useSocket();
     const [liveMessage, SetliveMessage] = useState<Chat[]>([]);
 
@@ -71,5 +71,6 @@ export function useChatSocket(roomId?: string) {
         liveMessage,
         SetliveMessage,
         sendMessage,
+        isConnected,
     };
 }

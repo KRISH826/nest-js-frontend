@@ -13,7 +13,12 @@ import {
   Underline
 } from "lucide-react"
 
-export function ChatInput() {
+interface ChatInputProps {
+  onSendMessage?: (text: string) => void
+  disabled?: boolean
+}
+
+export function ChatInput({ onSendMessage, disabled }: ChatInputProps = {}) {
   const [value, setValue] = useState("")
 
   return (
@@ -21,6 +26,9 @@ export function ChatInput() {
       <form 
         onSubmit={(e) => {
           e.preventDefault()
+          if (value.trim() && onSendMessage) {
+            onSendMessage(value.trim())
+          }
           setValue("")
         }}
         className="border border-slate-200 dark:border-zinc-800 rounded-xl bg-slate-50/70 dark:bg-zinc-900/30 flex flex-col focus-within:bg-white dark:focus-within:bg-zinc-900 focus-within:border-zinc-300 dark:focus-within:border-zinc-700 focus-within:ring-1 focus-within:ring-zinc-300 dark:focus-within:ring-zinc-700 transition-all overflow-hidden"
@@ -30,8 +38,9 @@ export function ChatInput() {
           type="text"
           placeholder="Send a message to Design System..."
           value={value}
+          disabled={disabled}
           onChange={(e) => setValue(e.target.value)}
-          className="w-full px-4 pt-3.5 pb-2 bg-transparent text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-550 border-none outline-none focus:ring-0 text-xs sm:text-sm"
+          className="w-full px-4 pt-3.5 pb-2 bg-transparent text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-550 border-none outline-none focus:ring-0 text-xs sm:text-sm disabled:opacity-50"
         />
 
         {/* Toolbar & Send Actions */}
@@ -98,9 +107,9 @@ export function ChatInput() {
 
           <Button
             type="submit"
-            disabled={!value.trim()}
+            disabled={disabled || !value.trim()}
             className={`h-7 px-3.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              value.trim()
+              !disabled && value.trim()
                 ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
                 : "bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500 cursor-not-allowed"
             }`}

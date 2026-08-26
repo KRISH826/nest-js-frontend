@@ -1,6 +1,22 @@
 import type { User } from "./user";
 import type { ChatRoom } from "./chatroom";
 
+export interface Message {
+  id: string;
+  sender: string;
+  senderType: "other" | "ai" | "user";
+  avatar: string;
+  content: string;
+  timestamp: string;
+}
+
+export interface Responder {
+  name: string;
+  type: "other" | "ai" | "user";
+  avatar: string;
+  templates: string[];
+}
+
 /**
  * Sender details populated from Mongoose User document
  */
