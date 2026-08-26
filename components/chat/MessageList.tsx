@@ -47,7 +47,7 @@ export function MessageList({ roomId, liveMessages }: MessageListProps) {
   }, [allMessages]);
 
   return (
-    <main className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-slate-50 dark:bg-zinc-950/20 scrollbar-thin">
+    <main className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-slate-50 dark:bg-indigo-900/30 scrollbar-thin">
       {allMessages.map((msg) => {
         const senderId = typeof msg.sender === "string" ? msg.sender : msg.sender?._id;
         const isUser = Boolean(currentUserId && senderId === currentUserId);

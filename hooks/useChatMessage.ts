@@ -2,7 +2,7 @@ import { useSocket } from "@/provider/SocketProvider";
 import { Chat, ChatSender } from "@/types/chat";
 import { useCallback, useEffect, useState } from "react";
 import { useAppDispatch } from "@/lib/hooks/hooks";
-import { appendChatMessageToCache } from "@/lib/helpers/appendChatMessage";
+import { appendChatMessageToCache } from "@/lib/api/chat/chatApi";
 
 export interface NewMessagePayload {
     _id?: string;
@@ -21,6 +21,12 @@ export function useChatSocket(roomId?: string | null) {
     const { isConnected, socket } = useSocket();
     const [liveMessage, SetliveMessage] = useState<Chat[]>([]);
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (socket && !socket.connected) {
+            socket.connect();
+        }
+    }, [socket]);
 
     useEffect(() => {
         if (!isConnected || !socket || !roomId) return;

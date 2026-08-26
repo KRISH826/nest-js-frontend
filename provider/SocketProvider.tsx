@@ -28,6 +28,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             console.log("[WS Disconnected]");
         }
 
+        function onConnectError(err: Error) {
+            setIsConnected(false);
+            console.log("[WS Connect Error]:", err.message);
+        }
+
         function onRoomNotice(data: { user: string; message: string; timestamp: string }) {
             console.log(`[Room Notice]: ${data.user} - ${data.message}`);
         }
@@ -39,18 +44,21 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         // Attach listeners
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
+        socket.on("connect_error", onConnectError);
         socket.on("roomNotice", onRoomNotice);
         socket.on("newMessage", onNewMessage); // Correct backend event name
 
-        socket.connect();
+        if (!socket.connected) {
+            socket.connect();
+        }
 
         // Clean up every listener on unmount
         return () => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
+            socket.off("connect_error", onConnectError);
             socket.off("roomNotice", onRoomNotice);
             socket.off("newMessage", onNewMessage);
-            socket.disconnect();
         };
     }, []);
 

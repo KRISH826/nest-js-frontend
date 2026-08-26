@@ -7,6 +7,8 @@ import {
     EditMessageRequest,
 } from '@/types/chat';
 
+export { appendChatMessageToCache } from '../../helpers/appendChatMessage';
+
 export const chatApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // Matches: @Get('room/:chatRoomId')
