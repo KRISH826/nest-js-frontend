@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { updateProfileSchema, UpdateProfileRequest } from "@/schema/user.schema"
 import { useRouter } from 'next/navigation'
+import { toast } from "sonner"
 
 export default function ProfileForm({ className, ...props }: React.ComponentProps<"div">) {
     const { data: profileResponse, isLoading: isLoadingProfile } = useGetProfileQuery()
@@ -38,15 +39,15 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
     const handleLogout = async () => {
         try {
             await logout().unwrap()
+            toast.success("Logged out successfully!")
             router.push('/login')
         } catch (err) {
-            console.error('Logout error:', err)
+            toast.error("Failed to log out. Please try again.")
         }
     }
 
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
-    const [errorMessage, setErrorMessage] = useState('')
 
     const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -93,8 +94,6 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
     }
 
     const onSubmit = async (data: UpdateProfileRequest) => {
-        setErrorMessage('')
-
         try {
             const formData = new FormData()
             if (data.fname) formData.append('fname', data.fname)
@@ -103,11 +102,13 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
             if (avatarFile) {
                 formData.append('avatar', avatarFile)
             }
-            await updateProfile(formData).unwrap()
-            router.push('/');
+            const res = await updateProfile(formData).unwrap()
+            toast.success(res.message || 'Profile updated successfully!')
+            router.push('/')
         } catch (err: unknown) {
             const errorObj = err as { data?: { message?: string } }
-            setErrorMessage(errorObj?.data?.message || 'Failed to update profile. Please try again.')
+            const msg = errorObj?.data?.message || 'Failed to update profile. Please try again.'
+            toast.error(msg)
         }
     }
 
@@ -211,13 +212,6 @@ export default function ProfileForm({ className, ...props }: React.ComponentProp
                                     </p>
                                 )}
                             </Field>
-
-                            {/* Feedback Messages */}
-                            {errorMessage && (
-                                <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-xs">
-                                    {errorMessage}
-                                </div>
-                            )}
 
                             {/* Action Buttons */}
                             <Field>

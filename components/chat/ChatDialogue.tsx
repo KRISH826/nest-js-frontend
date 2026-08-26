@@ -19,6 +19,7 @@ import { CreateChatRoomSchemaType, createChatRoomSchema } from '@/schema/chatroo
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateChatRoomMutation } from '@/lib/api/chat-room/chatRoomApi'
 import { Camera, Loader2, Upload } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface ChatDialogueProps {
     isOpen: boolean
@@ -77,10 +78,12 @@ export function ChatDialogue({ isOpen, onClose }: ChatDialogueProps) {
                 formData.append('avatar', avatarFile)
             }
 
-            await createChatRoom(formData).unwrap()
+            const res = await createChatRoom(formData).unwrap()
+            toast.success(res.message || 'Chat room created successfully!')
             handleClose()
-        } catch (error) {
-            console.log("Error creating chat room:", error)
+        } catch (error: unknown) {
+            const errorObj = error as { data?: { message?: string } }
+            toast.error(errorObj?.data?.message || "Failed to create chat room. Please try again.")
         }
     }
 

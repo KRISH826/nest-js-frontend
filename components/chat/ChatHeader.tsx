@@ -20,18 +20,31 @@ import {
   Phone,
   Users2,
   Lock,
-  Info,
   ArrowLeft,
   MoreVertical
 } from "lucide-react"
+import { useGetChatRoomByIdQuery } from "@/lib/api/chat-room/chatRoomApi"
+import { AvatarImage } from "@/components/ui/avatar"
+import ChatViewandUpdate from "./chatroom/ChatViewandUpdate"
 
 interface ChatHeaderProps {
   onBack: () => void
+  selectedRoomId?: string
 }
 
-export function ChatHeader({ onBack }: ChatHeaderProps) {
+export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [theme, setTheme] = useState<"light" | "dark">("dark")
+  const [openModal, setOpenModal] = useState<boolean>(false)
+
+  const { data: roomResponse, isLoading: isLoadingRoom } = useGetChatRoomByIdQuery(selectedRoomId || "", {
+    skip: !selectedRoomId,
+  })
+  const room = roomResponse?.data
+
+  const roomName = room?.name
+  const memberCount = room?.members?.length
+  const initials = roomName ? roomName.trim().substring(0, 2).toUpperCase() : ""
 
   const onThemeToggle = () => {
     const next = theme === "dark" ? "light" : "dark"
@@ -44,10 +57,14 @@ export function ChatHeader({ onBack }: ChatHeaderProps) {
     }
   }
 
+  const OpenDialog = () => {
+    setOpenModal(true)
+  }
+
   return (
     <header className="px-4 sm:px-6 py-4.5 flex flex-row justify-between items-center border-b border-slate-200/40 dark:border-zinc-800/60 bg-white dark:bg-zinc-950 flex-shrink-0 select-none">
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        
+
         {/* Mobile Back Action Button */}
         <Button
           variant="ghost"
@@ -59,30 +76,33 @@ export function ChatHeader({ onBack }: ChatHeaderProps) {
           <ArrowLeft className="w-4.5 h-4.5" />
         </Button>
 
-        <Avatar className="h-9 w-9 rounded-xl border border-zinc-150 dark:border-zinc-800 shrink-0">
+        <Avatar className="h-9 w-9 rounded-xl shrink-0 overflow-hidden">
+          {room?.avatar?.url ? (
+            <AvatarImage src={room.avatar.url} alt={roomName} className="object-cover w-full h-full" />
+          ) : null}
           <AvatarFallback className="bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
-            #
+            {initials}
           </AvatarFallback>
         </Avatar>
 
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-1.5">
-            <h1 className="font-bold text-slate-800 dark:text-zinc-100 tracking-tight text-sm truncate">
-              Design System & UI Sync
+            <h1 onClick={OpenDialog} className="font-bold cursor-pointer hover:underline text-slate-800 dark:text-zinc-100 tracking-tight text-sm truncate">
+              {isLoadingRoom ? "Loading..." : roomName}
             </h1>
             <Lock className="w-3 h-3 text-slate-400 dark:text-zinc-550 shrink-0" />
           </div>
-
           <p className="text-[10px] text-slate-450 dark:text-zinc-500 flex items-center gap-1 mt-0.5 leading-none">
             <Users2 className="w-3 h-3 text-slate-400 shrink-0" />
-            <span>8 members</span>
+            <span>{memberCount} {memberCount === 1 ? 'member' : 'members'}</span>
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-1.5 sm:gap-2">
+        <ChatViewandUpdate open={openModal} openChange={setOpenModal} roomId={selectedRoomId} />
         {/* Search bar (desktop only) */}
-        <div className="relative max-w-[130px] sm:max-w-[160px] hidden sm:block">
+        <div className="relative max-w-32.5 sm:max-w-40 hidden sm:block">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
           <input
             type="text"
@@ -109,16 +129,6 @@ export function ChatHeader({ onBack }: ChatHeaderProps) {
           title="Start Video Call"
         >
           <Video className="w-4 h-4" />
-        </Button>
-
-        {/* Info button (visible on all screen widths) */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8.5 w-8.5 rounded-lg cursor-pointer transition-all bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 hover:bg-indigo-500/15"
-          title="Toggle Info Pane"
-        >
-          <Info className="w-4 h-4" />
         </Button>
 
         <div className="h-5 w-px bg-zinc-200 dark:bg-zinc-800 mx-1.5 hidden sm:block" />
@@ -156,30 +166,30 @@ export function ChatHeader({ onBack }: ChatHeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 p-1 rounded-xl shadow-lg">
-              <DropdownMenuItem 
-                onClick={() => {}} 
+              <DropdownMenuItem
+                onClick={() => { }}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-705 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer"
               >
                 <Phone className="w-3.5 h-3.5 text-slate-400" />
                 <span>Audio Call</span>
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => {}} 
+              <DropdownMenuItem
+                onClick={() => { }}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-705 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer"
               >
                 <Video className="w-3.5 h-3.5 text-slate-400" />
                 <span>Video Call</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1 border-b border-slate-100 dark:border-zinc-800" />
-              <DropdownMenuItem 
-                onClick={onThemeToggle} 
+              <DropdownMenuItem
+                onClick={onThemeToggle}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-705 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer"
               >
                 {theme === "dark" ? <Sun className="w-3.5 h-3.5 text-slate-400" /> : <Moon className="w-3.5 h-3.5" />}
                 <span>Toggle Theme</span>
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => {}} 
+              <DropdownMenuItem
+                onClick={() => { }}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-rose-500 hover:bg-rose-500/10 cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5 text-rose-450" />

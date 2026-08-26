@@ -8,7 +8,7 @@ import { SearchCode, Loader2 } from "lucide-react"
 export interface Room {
   id: string
   name: string
-  type: string
+  type?: string
   avatar?: string | string[]
   lastMessage: string
   timestamp: string
@@ -19,18 +19,19 @@ export interface Room {
 interface ChatSidebarChatListProps {
   filteredRooms: Room[]
   isFetching?: boolean
+  selectedRoomId?: string | null
+  onSelectRoomId?: (id: string) => void
   onSelectChat: () => void
 }
 
-export function ChatSidebarChatList({ filteredRooms, isFetching, onSelectChat }: ChatSidebarChatListProps) {
-  const [selectedRoomId, setSelectedRoomId] = React.useState<string | null>(null)
-
-  React.useEffect(() => {
-    if (filteredRooms.length > 0 && (!selectedRoomId || !filteredRooms.some(r => r.id === selectedRoomId))) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedRoomId(filteredRooms[0].id)
-    }
-  }, [filteredRooms, selectedRoomId])
+export function ChatSidebarChatList({
+  filteredRooms,
+  isFetching,
+  selectedRoomId: externalSelectedRoomId,
+  onSelectRoomId,
+  onSelectChat
+}: ChatSidebarChatListProps) {
+  const selectedRoomId = externalSelectedRoomId ?? null
 
   const renderRoomAvatar = (room: Room) => {
     if (Array.isArray(room.avatar)) {
@@ -78,7 +79,7 @@ export function ChatSidebarChatList({ filteredRooms, isFetching, onSelectChat }:
             <div
               key={room.id}
               onClick={() => {
-                setSelectedRoomId(room.id)
+                if (onSelectRoomId) onSelectRoomId(room.id)
                 onSelectChat()
               }}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all ${selected

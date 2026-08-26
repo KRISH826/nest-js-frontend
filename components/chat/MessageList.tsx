@@ -2,70 +2,76 @@
 
 import * as React from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Chat } from "@/types/chat";
+import { useGetRoomMessagesQuery } from "@/lib/api/chat/chatApi";
+import { useGetProfileQuery } from "@/lib/api/auth/authApi";
 
-export function MessageList() {
-  // Static messages history data matching the design spec (text messages only)
-  const messages = [
-    {
-      id: "ds-m1",
-      sender: "Sarah Jenkins",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-      content: "Hey everyone! I completed the draft specifications for the Skype/Teams hybrid component layout.",
-      timestamp: "Yesterday 4:15 PM",
-      isUser: false
-    },
-    {
-      id: "ds-m2",
-      sender: "Alex Rivers",
-      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100",
-      content: "Awesome Sarah! I can start translating these specs into Tailwind CSS v4 variables directly.",
-      timestamp: "Yesterday 4:20 PM",
-      isUser: false
-    },
-    {
-      id: "ds-m3",
-      sender: "Krishnendu Pramanik",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
-      content: "Great progress. Can we make sure the borders are subtle? Like `slate-200/50` on light mode and `zinc-800/80` on dark mode.",
-      timestamp: "Yesterday 5:02 PM",
-      isUser: true
-    },
-    {
-      id: "ds-m4",
-      sender: "Sarah Jenkins",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-      content: "Absolutely! I have attached the asset pack containing the custom palette values and icon resources.",
-      timestamp: "10:35 AM",
-      isUser: false
-    },
-    {
-      id: "ds-m5",
-      sender: "Sarah Jenkins",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-      content: "Check out the new glassmorphism CSS variables in the screenshot!",
-      timestamp: "10:42 AM",
-      isUser: false
+interface MessageListProps {
+  roomId: string;
+  liveMessages: Chat[];
+}
+
+export function MessageList({ roomId, liveMessages }: MessageListProps) {
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  // 1. Fetch historical data from NestJS ChatController
+  const { data: response, isLoading } = useGetRoomMessagesQuery(
+    { chatRoomId: roomId },
+    { skip: !roomId }
+  );
+
+  const { data: userProfileData } = useGetProfileQuery()
+  const currentUserId = userProfileData?.data._id
+
+  const allMessages = React.useMemo(() => {
+    const historical = response?.data || [];
+    const map = new Map<string, Chat>();
+
+    // Add historical messages
+    historical.forEach((msg) => map.set(msg._id, msg));
+
+    // Append/merge live socket messages
+    liveMessages.forEach((msg) => {
+      if (msg.chatRoom === roomId) {
+        map.set(msg._id, msg);
+      }
+    });
+
+    return Array.from(map.values());
+  }, [response?.data, liveMessages, roomId]);
+
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  ]
+  }, [allMessages]);
 
   return (
-    <main className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-slate-50 dark:bg-zinc-950/20 scrollbar-thin">
-      {messages.map((msg) => {
-        const isUser = msg.isUser
+    <main className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-indigo-50/30 dark:bg-zinc-950/30 scrollbar-thin">
+      {allMessages.map((msg) => {
+        const senderId = typeof msg.sender === "string" ? msg.sender : msg.sender?._id;
+        const isUser = Boolean(currentUserId && senderId === currentUserId);
+        const senderName =
+          typeof msg.sender === "string"
+            ? msg.sender
+            : `${msg.sender?.fname || ""} ${msg.sender?.lname || ""}`.trim() || msg.sender?.email || "Unknown";
+        const avatarUrl = typeof msg.sender === "object" ? msg.sender?.avatar?.url : undefined;
+        const formattedTime = msg.createdAt
+          ? new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : "";
 
         return (
           <div
-            key={msg.id}
-            className={`flex items-start gap-3 max-w-[80%] ${
-              isUser ? "ml-auto flex-row-reverse" : "mr-auto"
-            }`}
+            key={msg._id}
+            className={`flex items-start gap-3 max-w-[80%] ${isUser ? "ml-auto flex-row-reverse" : "mr-auto"
+              }`}
           >
             {/* Sender Avatar */}
             {!isUser && (
               <Avatar className="h-9 w-9 shrink-0 select-none mt-0.5 animate-in fade-in duration-200">
-                <AvatarImage src={msg.avatar} alt={msg.sender} className="object-cover" />
+                <AvatarImage src={avatarUrl} alt={senderName} className="object-cover" />
                 <AvatarFallback className="bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-semibold text-xs flex items-center justify-center">
-                  {msg.sender.substring(0, 2).toUpperCase()}
+                  {senderName.substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             )}
@@ -74,19 +80,18 @@ export function MessageList() {
             <div className="flex flex-col">
               <div className={`flex items-center gap-1.5 mb-0.5 px-1 select-none ${isUser ? "justify-end" : "justify-start"}`}>
                 <span className="text-[11px] font-semibold text-slate-500 dark:text-zinc-450">
-                  {isUser ? "You" : msg.sender}
+                  {isUser ? "You" : senderName}
                 </span>
-                <span className="text-[10px] text-zinc-400 dark:text-zinc-550">{msg.timestamp}</span>
+                <span className="text-[10px] text-zinc-400 dark:text-zinc-550">{formattedTime}</span>
               </div>
 
               <div
-                className={`px-4 py-2.5 rounded-2xl shadow-xs text-xs sm:text-sm break-words leading-relaxed animate-in zoom-in-95 duration-150 ${
-                  isUser
-                    ? "bg-indigo-600 text-white rounded-tr-none"
-                    : "bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200/40 dark:border-zinc-800/60 rounded-tl-none"
-                }`}
+                className={`px-4 py-2.5 rounded-2xl shadow-xs text-xs sm:text-sm break-words leading-relaxed animate-in zoom-in-95 duration-150 ${isUser
+                  ? "bg-indigo-600 text-white rounded-tr-none"
+                  : "bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200/40 dark:border-zinc-800/60 rounded-tl-none"
+                  }`}
               >
-                {msg.content}
+                {msg.message}
               </div>
             </div>
           </div>

@@ -3,24 +3,16 @@
 import * as React from "react"
 import { useState, useMemo } from "react"
 import { ChatSidebarHeader } from "./ChatSidebarHeader"
-import { ChatSidebarChatList } from "./ChatSidebarChatList"
+import { ChatSidebarChatList, Room } from "./ChatSidebarChatList"
 import { ChatDialogue } from "./ChatDialogue"
 import { useGetChatroomsQuery } from "@/lib/api/chat-room/chatRoomApi"
 
 interface ChatSidebarProps {
   onSelectChat: () => void
+  selectedRoomId?: string | null
+  onSelectRoomId?: (id: string) => void
 }
 
-export interface Room {
-  id: string
-  name: string
-  type: string
-  avatar?: string | string[]
-  lastMessage: string
-  timestamp: string
-  unreadCount: number
-  status?: string
-}
 
 function formatTimestamp(dateStr?: string) {
   if (!dateStr) return "Just now"
@@ -34,7 +26,7 @@ function formatTimestamp(dateStr?: string) {
   return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
 }
 
-export function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
+export function ChatSidebar({ onSelectChat, selectedRoomId, onSelectRoomId }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeFilter, setActiveFilter] = useState<"all" | "unread" | "groups">("all")
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false)
@@ -46,7 +38,6 @@ export function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
     return chatroomsResponse.data.map((room) => ({
       id: room._id,
       name: room.name,
-      type: "channel",
       avatar: room.avatar?.url || undefined,
       lastMessage: room.description || "Workspace chat room",
       timestamp: formatTimestamp(room.createdAt),
@@ -54,18 +45,6 @@ export function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
       status: room.active ? "online" : "offline"
     }))
   }, [chatroomsResponse])
-
-  const filteredRooms = useMemo(() => {
-    return rooms.filter((room) => {
-      const matchesSearch = room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        room.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
-
-      if (!matchesSearch) return false
-      if (activeFilter === "unread") return room.unreadCount > 0
-      if (activeFilter === "groups") return room.type === "channel"
-      return true
-    })
-  }, [rooms, searchQuery, activeFilter])
 
   return (
     <div className="w-full h-full bg-zinc-50 dark:bg-zinc-900/60 border-r border-slate-200/50 dark:border-zinc-800/80 flex flex-col select-none relative transition-all duration-300">
@@ -82,8 +61,10 @@ export function ChatSidebar({ onSelectChat }: ChatSidebarProps) {
 
       {/* 2. Room/Thread Message List */}
       <ChatSidebarChatList
-        filteredRooms={filteredRooms}
+        filteredRooms={rooms}
         isFetching={isFetching}
+        selectedRoomId={selectedRoomId}
+        onSelectRoomId={onSelectRoomId}
         onSelectChat={onSelectChat}
       />
 

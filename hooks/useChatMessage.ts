@@ -1,72 +1,90 @@
-import { useEffect, useState, useCallback } from "react";
-import { socket } from "@/lib/socket/ws";
-import { Message, ChatMessage } from "@/types/chat";
+import { useSocket } from "@/provider/SocketProvider";
+import { Chat, ChatSender } from "@/types/chat";
+import { useCallback, useEffect, useState } from "react";
+import { useAppDispatch } from "@/lib/hooks/hooks";
+import { appendChatMessageToCache } from "@/lib/api/chat/chatApi";
 
-function formatTimestamp(ts: number): string {
-    return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+export interface NewMessagePayload {
+    _id?: string;
+    senderId?: string;
+    chatRoom: string;
+    sender: ChatSender;
+    message: string;
+    tempId?: string;
+    edited?: boolean;
+    deleted?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
-function toDisplayMessage(raw: ChatMessage, currentUsername?: string): Message {
-    const isSystem = raw.username === "system"
-    const isUser = raw.username === currentUsername
-
-    return {
-        id: raw.id,
-        content: raw.message,
-        sender: raw.username,
-        senderType: isSystem ? "system" : (isUser ? "user" : "other"),
-        timestamp: formatTimestamp(raw.timestamp),
-    }
-}
-
-export function useChatMessages(currentUsername?: string) {
-    const [messages, setMessages] = useState<Message[]>([]);
-
-    const handleChatMessage = useCallback(
-        (data: ChatMessage) => {
-            setMessages((prev) => [...prev, toDisplayMessage(data, currentUsername)])
-        },
-        [currentUsername]
-    )
-
-    const handleMessageList = useCallback((history: ChatMessage[]) => {
-        setMessages(
-            history.map((m) => toDisplayMessage(m, currentUsername))
-        )
-    }, [currentUsername])
-
-    const handleRoomNotice = useCallback((data: { username: string, message: string }) => {
-        setMessages((prev) => [
-            ...prev,
-            toDisplayMessage({
-                id: crypto.randomUUID(),
-                username: "system",
-                message: data.message,
-                timestamp: Date.now(),
-            }, currentUsername)
-        ])
-    }, [currentUsername])
+export function useChatSocket(roomId?: string | null) {
+    const { isConnected, socket } = useSocket();
+    const [liveMessage, SetliveMessage] = useState<Chat[]>([]);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        socket.on("chatMessage", handleChatMessage)
-        socket.on("messageList", handleMessageList)
-        socket.on("roomNotice", handleRoomNotice)
+        if (socket && !socket.connected) {
+            socket.connect();
+        }
+    }, [socket]);
+
+    useEffect(() => {
+        if (!isConnected || !socket || !roomId) return;
+
+        socket.emit("joinRoom", { roomId });
+
+        const handleMessage = (payload: NewMessagePayload) => {
+            if (payload.chatRoom === roomId) {
+                const formattedMessage: Chat = {
+                    _id: payload._id || payload.senderId || payload.tempId || '',
+                    chatRoom: payload.chatRoom,
+                    sender: payload.sender,
+                    message: payload.message,
+                    tempId: payload.tempId,
+                    edited: payload.edited ?? false,
+                    deleted: payload.deleted ?? false,
+                    createdAt: payload.createdAt || new Date().toISOString(),
+                    updatedAt: payload.updatedAt || payload.createdAt || new Date().toISOString(),
+                };
+
+                // 1. Append to local React state
+                SetliveMessage((prev) => [...prev, formattedMessage]);
+
+                // 2. Sync directly into RTK Query cache using chatApi helper
+                appendChatMessageToCache(dispatch, roomId, formattedMessage);
+            }
+        };
+
+        socket.on("newMessage", handleMessage);
 
         return () => {
-            socket.off("chatMessage", handleChatMessage)
-            socket.off("messageList", handleMessageList)
-            socket.off("roomNotice", handleRoomNotice)
-        }
-    }, [handleChatMessage, handleMessageList, handleRoomNotice])
+            socket.emit("leaveRoom", { roomId });
+            socket.off("newMessage", handleMessage);
+        };
+    }, [isConnected, roomId, socket, dispatch]);
 
-    const sendMessage = (message: string) => {
-        const trimmed = message.trim()
-        if (!trimmed) return
-        socket.emit("chatMessage", {
-            username: currentUsername,
-            message
-        })
-    }
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        SetliveMessage([]);
+    }, [roomId]);
 
-    return { messages, setMessages, sendMessage };
+    const sendMessage = useCallback(
+        (content: string) => {
+            if (!socket || !isConnected || !roomId || !content.trim()) return;
+            const tempId = `temp_${Date.now()}`;
+            socket.emit("chatMessage", {
+                chatRoom: roomId,
+                message: content,
+                tempId,
+            });
+        },
+        [socket, isConnected, roomId]
+    );
+
+    return {
+        liveMessage,
+        SetliveMessage,
+        sendMessage,
+        isConnected,
+    };
 }
