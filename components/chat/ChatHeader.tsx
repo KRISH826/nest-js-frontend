@@ -20,13 +20,11 @@ import {
   Phone,
   Users2,
   Lock,
-  Info,
   ArrowLeft,
   MoreVertical
 } from "lucide-react"
 import { useGetChatRoomByIdQuery } from "@/lib/api/chat-room/chatRoomApi"
 import { AvatarImage } from "@/components/ui/avatar"
-import JoinRoom from "./JoinRoom"
 import ChatViewandUpdate from "./chatroom/ChatViewandUpdate"
 
 interface ChatHeaderProps {
@@ -102,8 +100,6 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
       </div>
 
       <div className="flex items-center gap-1.5 sm:gap-2">
-        {/* Join Room Dialog Button */}
-        <JoinRoom />
         <ChatViewandUpdate open={openModal} openChange={setOpenModal} roomId={selectedRoomId} />
         {/* Search bar (desktop only) */}
         <div className="relative max-w-32.5 sm:max-w-40 hidden sm:block">
@@ -133,16 +129,6 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
           title="Start Video Call"
         >
           <Video className="w-4 h-4" />
-        </Button>
-
-        {/* Info button (visible on all screen widths) */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8.5 w-8.5 rounded-lg cursor-pointer transition-all bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 hover:bg-indigo-500/15"
-          title="Toggle Info Pane"
-        >
-          <Info className="w-4 h-4" />
         </Button>
 
         <div className="h-5 w-px bg-zinc-200 dark:bg-zinc-800 mx-1.5 hidden sm:block" />
