@@ -23,7 +23,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps = {}) {
 
   return (
     <footer className="p-4 bg-white dark:bg-zinc-950 border-t border-slate-200/40 dark:border-zinc-800/60 flex-shrink-0">
-      <form 
+      <form
         onSubmit={(e) => {
           e.preventDefault()
           if (value.trim() && onSendMessage) {
@@ -73,9 +73,9 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps = {}) {
             >
               <ImageIcon className="w-3.5 h-3.5" />
             </Button>
-            
+
             <div className="w-px h-3.5 bg-slate-200 dark:bg-zinc-800 mx-1.5" />
-            
+
             <Button
               type="button"
               variant="ghost"
@@ -108,11 +108,10 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps = {}) {
           <Button
             type="submit"
             disabled={disabled || !value.trim()}
-            className={`h-7 px-3.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              !disabled && value.trim()
+            className={`h-7 px-3.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${!disabled && value.trim()
                 ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
                 : "bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500 cursor-not-allowed"
-            }`}
+              }`}
           >
             <Send className="w-3 h-3 mr-1.5 inline" />
             Send
