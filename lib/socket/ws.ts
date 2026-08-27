@@ -8,6 +8,8 @@ export const socket: Socket = io(WS_URL, {
     withCredentials: true, // Crucial for sending HttpOnly access_token cookie over WS
     transports: ["websocket", "polling"],
     reconnection: true,
-    reconnectionAttempts: 10,
+    reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    timeout: 20000,
 });

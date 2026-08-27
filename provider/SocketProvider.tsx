@@ -1,3 +1,4 @@
+// src/provider/SocketProvider.tsx
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -41,24 +42,43 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             console.log("[New Message Received]:", data);
         }
 
-        // Attach listeners
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
         socket.on("connect_error", onConnectError);
         socket.on("roomNotice", onRoomNotice);
-        socket.on("newMessage", onNewMessage); // Correct backend event name
+        socket.on("newMessage", onNewMessage);
 
         if (!socket.connected) {
             socket.connect();
         }
 
-        // Clean up every listener on unmount
+        let reconnecting = false;
+
+        function forceReconnectIfNeeded() {
+            if (
+                document.visibilityState === "visible" &&
+                !socket.connected &&
+                !reconnecting
+            ) {
+                reconnecting = true;
+                socket.connect();
+                setTimeout(() => {
+                    reconnecting = false;
+                }, 3000);
+            }
+        }
+
+        document.addEventListener("visibilitychange", forceReconnectIfNeeded);
+        window.addEventListener("online", forceReconnectIfNeeded);
+
         return () => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
             socket.off("connect_error", onConnectError);
             socket.off("roomNotice", onRoomNotice);
             socket.off("newMessage", onNewMessage);
+            document.removeEventListener("visibilitychange", forceReconnectIfNeeded);
+            window.removeEventListener("online", forceReconnectIfNeeded);
         };
     }, []);
 
