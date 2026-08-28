@@ -38,7 +38,6 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps = {}) {
           type="text"
           placeholder="Send a message to Design System..."
           value={value}
-          disabled={disabled}
           onChange={(e) => setValue(e.target.value)}
           className="w-full px-4 pt-3.5 pb-2 bg-transparent text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-550 border-none outline-none focus:ring-0 text-xs sm:text-sm disabled:opacity-50"
         />
@@ -109,8 +108,8 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps = {}) {
             type="submit"
             disabled={disabled || !value.trim()}
             className={`h-7 px-3.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${!disabled && value.trim()
-                ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
-                : "bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500 cursor-not-allowed"
+              ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+              : "bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500 cursor-not-allowed"
               }`}
           >
             <Send className="w-3 h-3 mr-1.5 inline" />
