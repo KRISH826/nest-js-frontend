@@ -102,14 +102,14 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
       <div className="flex items-center gap-1.5 sm:gap-2">
         <ChatViewandUpdate open={openModal} openChange={setOpenModal} roomId={selectedRoomId} />
         {/* Search bar (desktop only) */}
-        <div className="relative max-w-32.5 sm:max-w-40 hidden sm:block">
+        <div className="relative max-w-34 sm:max-w-48 hidden sm:block">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
           <input
             type="text"
             placeholder="Search chat..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8.5 h-8.5 w-full text-xs bg-slate-100/60 dark:bg-zinc-900/40 border border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-300 dark:focus:border-zinc-800 rounded-lg outline-none transition-all"
+            className="pl-8.5 h-8.5 w-full text-xs bg-slate-100/80 dark:bg-zinc-900/40 border border-slate-100/30 focus:bg-white dark:focus:bg-zinc-900 focus:border-zinc-300 dark:focus:border-zinc-800 rounded-lg outline-none transition-all"
           />
         </div>
 
