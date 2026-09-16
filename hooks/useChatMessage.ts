@@ -63,6 +63,12 @@ export function useChatSocket(roomId?: string | null) {
         };
     }, [isConnected, roomId, socket, dispatch]);
 
+    const emitLeave = useCallback(() => {
+        if (socket && isConnected && roomId) {
+            socket.emit("leaveRoom", { roomId });
+        }
+    }, [socket, isConnected, roomId]);
+
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         SetliveMessage([]);
@@ -85,6 +91,7 @@ export function useChatSocket(roomId?: string | null) {
         liveMessage,
         SetliveMessage,
         sendMessage,
+        emitLeave,
         isConnected,
     };
 }

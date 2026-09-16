@@ -26,6 +26,7 @@ import {
 import { useGetChatRoomByIdQuery } from "@/lib/api/chat-room/chatRoomApi"
 import { AvatarImage } from "@/components/ui/avatar"
 import ChatViewandUpdate from "./chatroom/ChatViewandUpdate"
+import LeaveRoom from "./chatroom/LeaveRoom"
 
 interface ChatHeaderProps {
   onBack: () => void
@@ -144,14 +145,7 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
           {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8.5 w-8.5 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg cursor-pointer hidden sm:inline-flex"
-          title="Reset Identity Name"
-        >
-          <LogOut className="w-4.5 h-4.5" />
-        </Button>
+        {selectedRoomId && <LeaveRoom roomId={selectedRoomId} />}
 
         {/* Mobile Actions Dropdown Trigger (visible only on mobile viewports) */}
         <div className="block sm:hidden">
@@ -188,13 +182,7 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
                 {theme === "dark" ? <Sun className="w-3.5 h-3.5 text-slate-400" /> : <Moon className="w-3.5 h-3.5" />}
                 <span>Toggle Theme</span>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => { }}
-                className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-rose-500 hover:bg-rose-500/10 cursor-pointer"
-              >
-                <LogOut className="w-3.5 h-3.5 text-rose-450" />
-                <span>Reset Name</span>
-              </DropdownMenuItem>
+              {/* Note: The Mobile LeaveRoom button might be slightly different to trigger AlertDialog, but for now we can rely on desktop button or user navigating back */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
