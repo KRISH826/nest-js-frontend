@@ -42,12 +42,17 @@ export function CallModal({
   const [seconds, setSeconds] = useState(0)
   const [callState, setCallState] = useState<"connecting" | "connected">("connecting")
 
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen)
+
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen)
+    setSeconds(0)
+    setCallState("connecting")
+    setIsVideoOff(callType === "audio")
+  }
+
   useEffect(() => {
-    if (!isOpen) {
-      setSeconds(0)
-      setCallState("connecting")
-      return
-    }
+    if (!isOpen) return
 
     const timer = setTimeout(() => {
       setCallState("connected")
@@ -139,8 +144,8 @@ export function CallModal({
               size="icon"
               onClick={() => setIsMuted(!isMuted)}
               className={`h-11 w-11 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 ${isMuted
-                  ? "bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50"
-                  : "bg-slate-100 dark:bg-zinc-900 text-slate-700 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-800"
+                ? "bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50"
+                : "bg-slate-100 dark:bg-zinc-900 text-slate-700 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-800"
                 }`}
               title={isMuted ? "Unmute Mic" : "Mute Mic"}
             >
@@ -152,8 +157,8 @@ export function CallModal({
               size="icon"
               onClick={() => setIsVideoOff(!isVideoOff)}
               className={`h-11 w-11 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 ${isVideoOff
-                  ? "bg-slate-100 dark:bg-zinc-900 text-slate-400 dark:text-zinc-500 border border-slate-200 dark:border-zinc-800"
-                  : "bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900/50"
+                ? "bg-slate-100 dark:bg-zinc-900 text-slate-400 dark:text-zinc-500 border border-slate-200 dark:border-zinc-800"
+                : "bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900/50"
                 }`}
               title={isVideoOff ? "Turn On Camera" : "Turn Off Camera"}
             >
@@ -165,8 +170,8 @@ export function CallModal({
               size="icon"
               onClick={() => setIsSpeakerOn(!isSpeakerOn)}
               className={`h-11 w-11 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 ${!isSpeakerOn
-                  ? "bg-slate-100 dark:bg-zinc-900 text-slate-400 dark:text-zinc-500 border border-slate-200 dark:border-zinc-800"
-                  : "bg-slate-100 dark:bg-zinc-900 text-slate-700 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-800"
+                ? "bg-slate-100 dark:bg-zinc-900 text-slate-400 dark:text-zinc-500 border border-slate-200 dark:border-zinc-800"
+                : "bg-slate-100 dark:bg-zinc-900 text-slate-700 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-800"
                 }`}
               title={isSpeakerOn ? "Speaker Mute" : "Speaker On"}
             >
