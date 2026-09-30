@@ -66,7 +66,7 @@ export function MessageList({ roomId, liveMessages }: MessageListProps) {
 
         return (
           <div
-            key={msg._id || msg.tempId || `msg-${index}`}
+            key={msg._id || msg.tempId}
             className={`flex items-start gap-3 max-w-[80%] ${isUser ? "ml-auto flex-row-reverse" : "mr-auto"
               }`}
           >
