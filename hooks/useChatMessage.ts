@@ -1,6 +1,6 @@
 import { useSocket } from "@/provider/SocketProvider";
 import { Chat, ChatSender } from "@/types/chat";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "@/lib/hooks/hooks";
 import { appendChatMessageToCache } from "@/lib/api/chat/chatApi";
 
@@ -19,79 +19,141 @@ export interface NewMessagePayload {
 
 export function useChatSocket(roomId?: string | null) {
     const { isConnected, socket } = useSocket();
-    const [liveMessage, SetliveMessage] = useState<Chat[]>([]);
+    const [liveMessage, setLiveMessage] = useState<Chat[]>([]);
     const dispatch = useAppDispatch();
+    const roomIdRef = useRef(roomId);
 
+    // Keep active roomId ref fresh to avoid stale closures in socket callbacks
+    useEffect(() => {
+        roomIdRef.current = roomId;
+    }, [roomId]);
+
+    // Ensure socket auto-connects if disconnected
     useEffect(() => {
         if (socket && !socket.connected) {
             socket.connect();
         }
     }, [socket]);
 
+    // Handle room joining, auto-reconnection re-join, and incoming messages
     useEffect(() => {
-        if (!isConnected || !socket || !roomId) return;
+        if (!socket || !roomId) return;
 
-        socket.emit("joinRoom", { roomId });
-
-        const handleMessage = (payload: NewMessagePayload) => {
-            if (payload.chatRoom === roomId) {
-                const formattedMessage: Chat = {
-                    _id: payload._id || payload.senderId || payload.tempId || '',
-                    chatRoom: payload.chatRoom,
-                    sender: payload.sender,
-                    message: payload.message,
-                    tempId: payload.tempId,
-                    edited: payload.edited ?? false,
-                    deleted: payload.deleted ?? false,
-                    createdAt: payload.createdAt || new Date().toISOString(),
-                    updatedAt: payload.updatedAt || payload.createdAt || new Date().toISOString(),
-                };
-
-                // 1. Append to local React state
-                SetliveMessage((prev) => [...prev, formattedMessage]);
-
-                // 2. Sync directly into RTK Query cache using chatApi helper
-                appendChatMessageToCache(dispatch, roomId, formattedMessage);
+        const joinCurrentRoom = () => {
+            if (socket.connected && roomId) {
+                socket.emit("joinRoom", { roomId });
             }
         };
 
+        // 1. Join active chat room immediately
+        joinCurrentRoom();
+
+        // 2. Auto re-join room on WebSocket reconnection after network drops
+        const handleReconnect = () => {
+            joinCurrentRoom();
+        };
+
+        // 3. Handle incoming real-time messages from NestJS backend gateway
+        const handleMessage = (payload: NewMessagePayload) => {
+            const currentRoom = roomIdRef.current;
+            if (!payload || payload.chatRoom !== currentRoom) return;
+
+            const formattedMessage: Chat = {
+                _id: payload._id || payload.tempId || payload.senderId || `msg_${Date.now()}`,
+                chatRoom: payload.chatRoom,
+                sender: payload.sender,
+                message: payload.message,
+                tempId: payload.tempId,
+                edited: payload.edited ?? false,
+                deleted: payload.deleted ?? false,
+                createdAt: payload.createdAt || new Date().toISOString(),
+                updatedAt: payload.updatedAt || payload.createdAt || new Date().toISOString(),
+            };
+
+            // WhatsApp-level Deduplication & Reconciliation:
+            // If message with tempId or _id exists, replace/reconcile; otherwise append.
+            setLiveMessage((prev) => {
+                const existingIndex = prev.findIndex(
+                    (m) =>
+                        (payload.tempId && m.tempId === payload.tempId) ||
+                        (formattedMessage._id && m._id === formattedMessage._id)
+                );
+
+                if (existingIndex !== -1) {
+                    const updated = [...prev];
+                    updated[existingIndex] = formattedMessage;
+                    return updated;
+                }
+
+                return [...prev, formattedMessage];
+            });
+
+            // Sync message directly into RTK Query cache
+            appendChatMessageToCache(dispatch, currentRoom, formattedMessage);
+        };
+
+        socket.on("connect", handleReconnect);
         socket.on("newMessage", handleMessage);
 
         return () => {
-            socket.emit("leaveRoom", { roomId });
+            if (socket.connected) {
+                socket.emit("leaveRoom", { roomId });
+            }
+            socket.off("connect", handleReconnect);
             socket.off("newMessage", handleMessage);
         };
-    }, [isConnected, roomId, socket, dispatch]);
+    }, [socket, roomId, dispatch]);
+
+    // Reset live messages state when changing active rooms (during render to avoid cascading renders)
+    const [prevRoomId, setPrevRoomId] = useState(roomId);
+    if (prevRoomId !== roomId) {
+        setPrevRoomId(roomId);
+        setLiveMessage([]);
+    }
 
     const emitLeave = useCallback(() => {
-        if (socket && isConnected && roomId) {
+        if (socket && socket.connected && roomId) {
             socket.emit("leaveRoom", { roomId });
         }
-    }, [socket, isConnected, roomId]);
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        SetliveMessage([]);
-    }, [roomId]);
+    }, [socket, roomId]);
 
     const sendMessage = useCallback(
         (content: string) => {
-            if (!socket || !isConnected || !roomId || !content.trim()) return;
-            const tempId = `temp_${Date.now()}`;
-            socket.emit("chatMessage", {
-                chatRoom: roomId,
-                message: content,
-                tempId,
-            });
+            const trimmed = content.trim();
+            if (!socket || !socket.connected || !roomId || !trimmed) return;
+
+            const tempId = `temp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+            socket.emit(
+                "chatMessage",
+                {
+                    chatRoom: roomId,
+                    message: trimmed,
+                    tempId,
+                },
+                (response?: { status: string; chatData?: Chat; message?: string }) => {
+                    if (response?.status === "success" && response.chatData) {
+                        const verified = response.chatData;
+                        setLiveMessage((prev) =>
+                            prev.map((m) => (m.tempId === tempId ? verified : m))
+                        );
+                        appendChatMessageToCache(dispatch, roomId, verified);
+                    }
+                }
+            );
         },
-        [socket, isConnected, roomId]
+        [socket, roomId, dispatch]
     );
 
     return {
         liveMessage,
-        SetliveMessage,
+        SetliveMessage: setLiveMessage,
+        setLiveMessage,
         sendMessage,
         emitLeave,
         isConnected,
     };
 }
+
+export const useChatMessage = useChatSocket;
+export default useChatSocket;
