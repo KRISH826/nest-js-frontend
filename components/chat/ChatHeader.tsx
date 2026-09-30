@@ -26,6 +26,9 @@ import {
 import { useGetChatRoomByIdQuery } from "@/lib/api/chat-room/chatRoomApi"
 import { AvatarImage } from "@/components/ui/avatar"
 import ChatViewandUpdate from "./chatroom/ChatViewandUpdate"
+import LeaveRoom from "./chatroom/LeaveRoom"
+import { CallModal } from "./call/CallModal"
+import { IncomingCallBanner } from "./call/IncomingCallBanner"
 
 interface ChatHeaderProps {
   onBack: () => void
@@ -36,6 +39,11 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [theme, setTheme] = useState<"light" | "dark">("dark")
   const [openModal, setOpenModal] = useState<boolean>(false)
+
+  // Static Call UI States
+  const [isCallOpen, setIsCallOpen] = useState<boolean>(false)
+  const [callType, setCallType] = useState<"audio" | "video">("audio")
+  const [showIncomingCall, setShowIncomingCall] = useState<boolean>(false)
 
   const { data: roomResponse, isLoading: isLoadingRoom } = useGetChatRoomByIdQuery(selectedRoomId || "", {
     skip: !selectedRoomId,
@@ -61,10 +69,37 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
     setOpenModal(true)
   }
 
-  return (
-    <header className="px-4 sm:px-6 py-4.5 flex flex-row justify-between items-center border-b border-slate-200/40 dark:border-zinc-800/60 bg-white dark:bg-zinc-950 flex-shrink-0 select-none">
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+  const handleStartCall = (type: "audio" | "video") => {
+    setCallType(type)
+    setIsCallOpen(true)
+  }
 
+  return (
+    <header className="px-4 sm:px-6 py-4.5 flex flex-row justify-between items-center border-b border-slate-200/40 dark:border-zinc-800/60 bg-white dark:bg-zinc-950 flex-shrink-0 select-none relative">
+      {/* 1. Outgoing / Active Call Popup Modal */}
+      <CallModal
+        isOpen={isCallOpen}
+        onClose={() => setIsCallOpen(false)}
+        roomName={roomName || "Design System Room"}
+        avatarUrl={room?.avatar?.url}
+        callType={callType}
+      />
+
+      {/* 2. Incoming Call Notification Banner */}
+      <IncomingCallBanner
+        isOpen={showIncomingCall}
+        callerName={roomName || "Alex Rivera"}
+        avatarUrl={room?.avatar?.url}
+        callType="audio"
+        onAccept={() => {
+          setShowIncomingCall(false)
+          setCallType("audio")
+          setIsCallOpen(true)
+        }}
+        onReject={() => setShowIncomingCall(false)}
+      />
+
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {/* Mobile Back Action Button */}
         <Button
           variant="ghost"
@@ -113,10 +148,23 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
           />
         </div>
 
+        {/* Demo trigger button for Incoming Call simulation */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowIncomingCall(true)}
+          className="hidden md:inline-flex text-[11px] h-7 px-2.5 rounded-lg border-indigo-500/30 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 cursor-pointer font-medium"
+          title="Test Incoming Call UI"
+        >
+          <Phone className="w-3 h-3 mr-1 animate-pulse" />
+          Test Incoming
+        </Button>
+
         {/* Call Actions (desktop only) */}
         <Button
           variant="ghost"
           size="icon"
+          onClick={() => handleStartCall("audio")}
           className="h-8.5 w-8.5 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg cursor-pointer hidden sm:inline-flex"
           title="Start Audio Call"
         >
@@ -125,6 +173,7 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
         <Button
           variant="ghost"
           size="icon"
+          onClick={() => handleStartCall("video")}
           className="h-8.5 w-8.5 text-zinc-500 hover:text-zinc-855 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg cursor-pointer hidden sm:inline-flex"
           title="Start Video Call"
         >
@@ -144,14 +193,7 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
           {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8.5 w-8.5 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg cursor-pointer hidden sm:inline-flex"
-          title="Reset Identity Name"
-        >
-          <LogOut className="w-4.5 h-4.5" />
-        </Button>
+        {selectedRoomId && <LeaveRoom roomId={selectedRoomId} />}
 
         {/* Mobile Actions Dropdown Trigger (visible only on mobile viewports) */}
         <div className="block sm:hidden">
@@ -167,18 +209,25 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 p-1 rounded-xl shadow-lg">
               <DropdownMenuItem
-                onClick={() => { }}
+                onClick={() => handleStartCall("audio")}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-705 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer"
               >
                 <Phone className="w-3.5 h-3.5 text-slate-400" />
                 <span>Audio Call</span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => { }}
+                onClick={() => handleStartCall("video")}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-705 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer"
               >
                 <Video className="w-3.5 h-3.5 text-slate-400" />
                 <span>Video Call</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setShowIncomingCall(true)}
+                className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950 cursor-pointer"
+              >
+                <Phone className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Test Incoming Call</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-1 border-b border-slate-100 dark:border-zinc-800" />
               <DropdownMenuItem
@@ -188,13 +237,6 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
                 {theme === "dark" ? <Sun className="w-3.5 h-3.5 text-slate-400" /> : <Moon className="w-3.5 h-3.5" />}
                 <span>Toggle Theme</span>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => { }}
-                className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-rose-500 hover:bg-rose-500/10 cursor-pointer"
-              >
-                <LogOut className="w-3.5 h-3.5 text-rose-450" />
-                <span>Reset Name</span>
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -203,3 +245,4 @@ export function ChatHeader({ onBack, selectedRoomId }: ChatHeaderProps) {
     </header>
   )
 }
+

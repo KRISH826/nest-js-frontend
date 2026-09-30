@@ -10,10 +10,12 @@ export const appendChatMessageToCache = (
     dispatch(
         chatApi.util.updateQueryData('getRoomMessages', { chatRoomId }, (draft) => {
             if (draft && Array.isArray(draft.data)) {
-                const exists = draft.data.some(
-                    (m) => m._id === message._id || (message.tempId && m.tempId === message.tempId)
+                const existingIndex = draft.data.findIndex(
+                    (m) => (message._id && m._id === message._id) || (message.tempId && m.tempId === message.tempId)
                 );
-                if (!exists) {
+                if (existingIndex !== -1) {
+                    draft.data[existingIndex] = { ...draft.data[existingIndex], ...message };
+                } else {
                     draft.data.push(message);
                 }
             }
