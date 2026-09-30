@@ -27,13 +27,17 @@ export function MessageList({ roomId, liveMessages }: MessageListProps) {
     const historical = response?.data || [];
     const map = new Map<string, Chat>();
 
-    // Add historical messages
-    historical.forEach((msg) => map.set(msg._id, msg));
+    // 1. Add historical messages from database query
+    historical.forEach((msg) => {
+      const key = msg._id || msg.tempId;
+      if (key) map.set(key, msg);
+    });
 
-    // Append/merge live socket messages
+    // 2. Add/override with live socket messages for this room
     liveMessages.forEach((msg) => {
       if (msg.chatRoom === roomId) {
-        map.set(msg._id, msg);
+        const key = msg._id || msg.tempId;
+        if (key) map.set(key, msg);
       }
     });
 
@@ -48,7 +52,7 @@ export function MessageList({ roomId, liveMessages }: MessageListProps) {
 
   return (
     <main className="flex-1 overflow-y-auto px-6 py-6 space-y-4 bg-indigo-50/30 dark:bg-zinc-950/30 scrollbar-thin">
-      {allMessages.map((msg) => {
+      {allMessages.map((msg, index) => {
         const senderId = typeof msg.sender === "string" ? msg.sender : msg.sender?._id;
         const isUser = Boolean(currentUserId && senderId === currentUserId);
         const senderName =
@@ -62,7 +66,7 @@ export function MessageList({ roomId, liveMessages }: MessageListProps) {
 
         return (
           <div
-            key={msg._id}
+            key={msg._id || msg.tempId || `msg-${index}`}
             className={`flex items-start gap-3 max-w-[80%] ${isUser ? "ml-auto flex-row-reverse" : "mr-auto"
               }`}
           >
