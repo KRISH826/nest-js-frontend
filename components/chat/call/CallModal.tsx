@@ -87,7 +87,7 @@ export function CallModal({
         showCloseButton={false}
         className="max-w-sm w-full p-6 bg-white/95 dark:bg-zinc-950/95 text-slate-900 dark:text-zinc-100 border border-slate-200/80 dark:border-zinc-800/80 shadow-2xl rounded-2xl backdrop-blur-xl transition-all duration-300 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95"
       >
-        <div className="flex flex-col items-center justify-between min-h-[340px]">
+        <div className="flex flex-col items-center justify-between min-h-85">
           {/* Header Info */}
           <DialogHeader className="items-center text-center space-y-1.5 w-full">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/50">
